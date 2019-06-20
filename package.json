@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node bin/www",
-    "dev": "./node_modules/.bin/nodemon bin/www",
+    "start": "NODE_ENV=development node bin/www",
+    "dev": "NODE_ENV=development ./node_modules/.bin/nodemon bin/www",
     "prd": "pm2 start bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pm2 start ecosystem.config.js --env production",
+    "test": "NODE_ENV=development mocha 'test/**/*.js' --recursive --timeout 60000 --exit"
   },
   "dependencies": {
+    "config": "^3.1.0",
     "debug": "^4.1.1",
+    "global": "^4.4.0",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-convert": "^1.2.0",
@@ -17,11 +20,18 @@
     "koa-logger": "^3.2.0",
     "koa-onerror": "^4.1.0",
     "koa-router": "^7.4.0",
+    "koa-session": "^5.12.0",
     "koa-static": "^5.0.0",
+    "koa-validate": "^1.0.7",
     "koa-views": "^6.2.0",
-    "pug": "^2.0.3"
+    "mongoose": "^5.6.0",
+    "pug": "^2.0.3",
+    "svg-captcha": "^1.4.0"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.1",
+    "should": "^13.2.3",
+    "supertest": "^4.0.2"
   }
 }
