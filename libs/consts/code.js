@@ -18,7 +18,7 @@ module.exports = {
   BadRequest: {
     code: 400,
     msg: '参数错误',
-    opMsg: '操作失败$',
+    opMsg: '操作失败$'
   },
   Unauthorized: {
     code: 401,
@@ -43,5 +43,5 @@ module.exports = {
   GatewayTimeout: {
     code: 504,
     msg: '请求超时'
-  },
+  }
 }

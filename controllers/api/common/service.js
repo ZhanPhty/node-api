@@ -18,8 +18,8 @@ module.exports.captcha = async (ctx, next) => {
   })
 
   // 开发环境可以从参数中接收图片验证码
-  if (process.env.NODE_ENV === "development" && ctx.query.text) {
-    captcha.text = ctx.query.text;
+  if (process.env.NODE_ENV === 'development' && ctx.query.text) {
+    captcha.text = ctx.query.text
   }
 
   ctx.session.captcha = captcha.text
@@ -38,20 +38,22 @@ module.exports.checkCaptcha = async (ctx, next) => {
   let errors = []
   if (ctx.errors) {
     errors = ctx.errors
-    ctx.body = { code: Code.BadRequest.code, msg: Code.BadRequest.msg, errors }
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
     return
   }
 
   let captcha = ctx.request.body.captcha
-  if (
-    process.env.NODE_ENV !== "development" &&
-    process.env.NODE_ENV !== "test" &&
-    (!ctx.session.captcha ||
-      !captcha ||
-      captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())
-  ) {
+  if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test' && (!ctx.session.captcha || !captcha || captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())) {
     errors = '图片验证码错误'
-    ctx.body = { code: Code.BadRequest.code, msg: Code.BadRequest.msg, errors }
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
     return
   }
   ctx.session.captcha = null

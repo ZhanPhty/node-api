@@ -7,8 +7,8 @@ module.exports = {
     {
       name: 'blog',
       script: 'bin/www',
-      instances: "max",
-      exec_mode: "cluster",
+      instances: 'max',
+      exec_mode: 'cluster',
       autorestart: true,
       env: {
         NODE_ENV: 'development'
@@ -21,4 +21,4 @@ module.exports = {
       }
     }
   ]
-};
+}

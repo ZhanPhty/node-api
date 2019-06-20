@@ -1,7 +1,6 @@
-
 module.exports = {
-  public: {
-    service: require('./public/service')
+  common: {
+    service: require('./common/service')
   },
   user: {
     reg: require('./user/reg')
