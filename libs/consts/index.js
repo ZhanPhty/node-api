@@ -1,1 +1,4 @@
-module.exports.Code = require('./code')
+module.exports = {
+  Code: require('./code'),
+  User: require('./user')
+}

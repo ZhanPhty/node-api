@@ -20,6 +20,8 @@ koaValidate(app)
 onerror(app)
 
 // middlewares
+app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
+
 app.use(
   bodyparser({
     enableTypes: ['json', 'form', 'text']

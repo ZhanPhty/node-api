@@ -4,16 +4,11 @@
   "mongodb": {
     "blog": {
       "host": "mongodb://127.0.0.1:27017/blog",
-      "test_host": "mongodb://test:test@103.120.225.163:27018/blog",
+      "test_host": "mongodb://root:123456@127.0.0.1:27017/test_blog",
       "extra": {
-        "server": {
-          "auto_connect": true,
-          "poolSize": 10,
-          "socketOptions": {
-            "timeOut": 5000,
-            "keepAlive": 1
-          }
-        }
+        "useNewUrlParser": true,
+        "autoReconnect": true,
+        "poolSize": 10
       }
     }
   }
