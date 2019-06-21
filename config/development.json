@@ -10,6 +10,23 @@
         "autoReconnect": true,
         "poolSize": 10
       }
+    },
+    "admin": {
+      "host": "mongodb://127.0.0.1:27017/test_admin",
+      "test_host": "mongodb://root:123456@127.0.0.1:27017/test_admin",
+      "extra": {
+        "useNewUrlParser": true,
+        "autoReconnect": true,
+        "poolSize": 10
+      }
     }
-  }
+  },
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "connectTimeout": 3000,
+    "db": 0
+  },
+  "limit": 10,
+  "secret": "Blog@&06dFAj"
 }

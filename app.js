@@ -8,11 +8,15 @@ const logger = require('koa-logger')
 
 const koaValidate = require('koa-validate')
 const session = require('koa-session')
+const koaJwt = require('koa-jwt')
 
 const config = require('config')
 global.config = config
 
-let api = require('./routes/api/index')
+const tokenJwt = require('./libs/utils/token')
+const { Code } = require('./libs/consts')
+const api = require('./routes/api/index')
+const admin = require('./routes/admin/index')
 
 // 验证中间件
 koaValidate(app)
@@ -20,6 +24,7 @@ koaValidate(app)
 onerror(app)
 
 // middlewares
+app.use(require('./middleware/redis')(config.get('redis'))) // redis
 app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
 
 app.use(
@@ -35,6 +40,27 @@ app.use(
   views(__dirname + '/views', {
     extension: 'pug'
   })
+)
+
+app.use(async (ctx, next) => {
+  return next().catch(err => {
+    if (401 === err.status) {
+      ctx.status = 401
+      ctx.body = {
+        code: Code.ErrorToken.code,
+        msg: Code.ErrorToken.msg
+      }
+    } else {
+      throw err
+    }
+  })
+})
+
+app.use(
+  koaJwt({ secret: config.get('secret') })
+  // .unless({
+  //   path: [/^\/blogapi\/login/]
+  // })
 )
 
 //session
@@ -65,6 +91,7 @@ app.use(async (ctx, next) => {
 
 // routes
 app.use(api.routes(), api.allowedMethods())
+app.use(admin.routes(), admin.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {

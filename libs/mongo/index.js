@@ -1,5 +1,8 @@
-module.exports = blog => {
+module.exports = (blog, admin) => {
   const model = {
+    auth: {
+      Permission: admin.model('permission', require('./auth/permission'))
+    },
     user: {
       User: blog.model('user', require('./user/user'))
     }

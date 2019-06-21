@@ -47,7 +47,11 @@ module.exports.checkCaptcha = async (ctx, next) => {
   }
 
   let captcha = ctx.request.body.captcha
-  if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test' && (!ctx.session.captcha || !captcha || captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())) {
+  if (
+    process.env.NODE_ENV !== 'development' &&
+    process.env.NODE_ENV !== 'test' &&
+    (!ctx.session.captcha || !captcha || captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())
+  ) {
     errors = '图片验证码错误'
     ctx.body = {
       code: Code.BadRequest.code,

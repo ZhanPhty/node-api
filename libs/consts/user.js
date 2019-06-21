@@ -6,5 +6,5 @@ module.exports = {
     reject: 'reject',
     freeze: 'freeze'
   },
-  initPassword: 'f379eaf3c831b04de153469d1bec345e',
+  initPassword: 'f379eaf3c831b04de153469d1bec345e'
 }

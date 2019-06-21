@@ -17,8 +17,7 @@ module.exports = {
   },
   BadRequest: {
     code: 400,
-    msg: '参数错误',
-    opMsg: '操作失败$'
+    msg: '参数错误'
   },
   Unauthorized: {
     code: 401,
@@ -43,5 +42,29 @@ module.exports = {
   GatewayTimeout: {
     code: 504,
     msg: '请求超时'
+  },
+  LackToken: {
+    code: 511,
+    msg: '缺失token'
+  },
+  LackAuth: {
+    code: 512,
+    msg: '缺失auth_key'
+  },
+  ExpiredToken: {
+    code: 513,
+    msg: 'token过期'
+  },
+  ErrorToken: {
+    code: 514,
+    msg: 'token验证失败'
+  },
+  ErrorJwt: {
+    code: 520,
+    msg: 'jsonwebtoken生成失败'
+  },
+  ExpiredJwt: {
+    code: 521,
+    msg: 'jsonwebtoken验证失败'
   }
 }

@@ -1,3 +1,4 @@
 module.exports = {
-  tool: require('./tool')
+  tool: require('./tool'),
+  token: require('./token')
 }

@@ -1,13 +1,15 @@
 const crypto = require('crypto')
 
-exports.md5 = str => {
-  var result = ''
+/**
+ * 密码加密
+ */
+module.exports.md5 = str => {
+  let result = ''
   try {
-    if (str && typeof str === "string") {
+    if (str && typeof str === 'string') {
       var md5Str = crypto.createHash('md5')
       result = md5Str.update(str).digest('hex')
-    }
-    else {
+    } else {
       result = ''
     }
   } catch (err) {
@@ -15,4 +17,3 @@ exports.md5 = str => {
   }
   return result
 }
-
