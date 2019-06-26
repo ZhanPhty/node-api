@@ -7,7 +7,7 @@ const { Code } = require('../../../libs/consts')
  * @create 2019-06-21 14:18:07
  */
 
-exports.login = async (ctx, next) => {
+exports.login = async (ctx) => {
   ctx.checkBody('account').notEmpty('账号不能为空')
   ctx.checkBody('password').notEmpty('密码不能为空')
 
@@ -25,26 +25,16 @@ exports.login = async (ctx, next) => {
   const { account, password } = ctx.request.body
   let result = await ctx.mongo.user.User.login(account, password)
 
-  console.log(ctx.state.user)
-
   if (result) {
-    token
-      .createToken(result._id, config.get('secret'))
-      .then(res => {
-        ctx.body = {
-          code: Code.OK.code,
-          msg: Code.OK.msg,
-          data: {
-            token: res
-          }
-        }
-      })
-      .catch(() => {
-        ctx.body = {
-          code: Code.ErrorJwt.code,
-          msg: Code.ErrorJwt.msg
-        }
-      })
+    const newToken = await token.createToken(result._id, config.get('secret'))
+
+    ctx.body = {
+      code: Code.OK.code,
+      msg: Code.OK.msg,
+      data: {
+        ...newToken
+      }
+    }
   } else {
     ctx.body = {
       code: Code.BadRequest.code,

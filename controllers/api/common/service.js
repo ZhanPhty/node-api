@@ -1,5 +1,6 @@
 const svgCaptcha = require('svg-captcha')
 const { Code } = require('../../../libs/consts')
+const { token } = require('../../../libs/utils')
 
 /**
  * 生成图形验证码
@@ -62,4 +63,44 @@ module.exports.checkCaptcha = async (ctx, next) => {
   }
   ctx.session.captcha = null
   await next()
+}
+
+/**
+ * 重新生成token, 续期token
+ * 检测refreshToken是否过期，通过后生成新的token达到续期的作用
+ * @return { token, refreshToken }
+ */
+module.exports.renewal = async (ctx, next) => {
+  ctx.checkBody('refreshToken').notEmpty('refreshToken不能为空!')
+
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  const { refreshToken } = ctx.request.body
+  const checkToken = await token.checkToken(refreshToken, config.get('secret'))
+
+  if (checkToken.isRefresh) {
+    const newToken = token.createToken(checkToken.uid, config.get('secret'))
+    ctx.body = {
+      code: Code.OK.code,
+      msg: Code.OK.msg,
+      data: {
+        ...newToken
+      }
+    }
+  } else {
+    ctx.status = 401
+    ctx.body = {
+      code: Code.ExpiredJwt.code,
+      msg: Code.ExpiredJwt.msg
+    }
+  }
 }

@@ -1,4 +1,7 @@
 module.exports = {
+  article: {
+    article: require('./article/article')
+  },
   common: {
     service: require('./common/service')
   },

@@ -9,57 +9,20 @@
 # 签名说明
 
 ### api请求说明
-1. 使用restful风格
-2. 接口请求必须额外添加参数，必填字段：auth_key（api授权key），timestamp（时间戳），token（参数签名），下面会介绍token生成规则和方法
-3. 请求的header里需要带上参数：sessionKey（用户登录后服务端返回的JsonWebToken形式的token，有效期暂定一个月，token中包含用户的user_id，客户端保存到本地，每次请求时放入header的`access-token`参数中。用户退出时清除sessionKey）
+1. 使用restful风格API
+2. 使用JsonWebToken(缩写 JWT)认证方案
+3. 用户登录后获得两个token,`token`与`refreshToken`，客户端需保存至本地，用于接口请求认证
+    - `token`：用户登录状态认证 - 有效期暂定2小时，失效后通过'refreshToken'获取新的有效token，达到自动续期作用
+    - `refreshToken`：续期用户token的作用 - 有效期15天，有效期内可换取新的'token'，失效后用户退出登录
+4. 请求的header里需要带上参数：`Authorization`（登录后服务端返回的token，token中包含用户的`uid`。用户退出后需清除本地保存的`token`）
 
-### Token生成说明
-#### 1. 请求API必须参数
-| 参数名|数据类型|说明 |
-|---|:---:|---|
-| token | String | 接口调用凭据 |
-| auth_key | String | 授权码校验key |
-| timestamp | Number | 请求时间戳，UTC时间1970年1月1日 00:00:00以来的毫秒数 |
-#### 2.接口调用凭据（token）生成算法
-
-- 算法
-将除token和auth_key外其他参数的值以参数名的字典顺序排序后拼接为字符串，再在字符串尾部拼接上auth_secret后做md5计算（32位）
-
-- 详细说明
-
-```
-//申请到的授权码
-{
-   auth_key: "fwCWYMqmRINlRtMp", 
-   auth_secret: "G7qMjMTRYkG7tuc9zujGvkVImW4WJ5kh"
-}
-//请求参数
-requestData = {
-  timestamp: 1529379565395,
-  type: "login",
-  mobile: "18701086068",
-  auth_key: "fwCWYMqmRINlRtMp"
-}
-//将authKey外其他参数以参数名的字典顺序排序
-'mobile', 'timestamp', 'type'
-//以排序后的参数名的顺序将对应参数值拼接为字符串，并将auth_secret拼接到尾部，然后计算md5值
-
-//拼接字符串
-str = requestData.mobile + requestData.timestamp + requestData.type + auth_secret;
-//即 str = "18701086068" + "1529379565395" + "login" + "G7qMjMTRYkG7tuc9zujGvkVImW4WJ5kh";
-//计算md5值
-token = md5(str) // token = "e47faedcccab34f2f91ddba207dad5f8"
-
-//最终发出请求的参数为 
-{
-  timestamp: 1529379565395,
-  type: "login",
-  mobile: "18701086068",
-  auth_key: "fwCWYMqmRINlRtMp",
-  token:"c5115fc1c723bfa01f30307ec3a385dc"
-}
-```
-
+    ```
+    // 'Bearer 用户token' - 注意Bearer后面的空格
+    header: {
+        Authorization: Bearer eyJhbGciOJ9.eyJ1aWQixNX0.qEk85A2yB945
+    }
+    ```
+5. token详细使用与介绍 - 参考[token使用说明](./token使用说明.md)
 
 # 其他说明
 
@@ -120,7 +83,7 @@ token = md5(str) // token = "e47faedcccab34f2f91ddba207dad5f8"
 ```
 **接口方式** HTTP    
 **HTTP方法** GET    
-**URI路径** '/blogapi/service/captcha'      
+**URI路径** '${apiServer}/blogapi/service/captcha'      
 **参数**    
 
 | 参数名|数据类型|必须|默认|说明 |
@@ -134,6 +97,41 @@ token = md5(str) // token = "e47faedcccab34f2f91ddba207dad5f8"
 |---|:---:|---|
 | data | Image | 返回svg图片（html标签显示）  |
 
+### 1.1.2 续期token
+```
+token过期，进行续期
+```
+**接口方式** HTTP    
+**HTTP方法** POST    
+**URI路径** '${apiServer}/blogapi/service/renewal'      
+**参数**    
+
+| 参数名|数据类型|必须|默认|说明 |
+|---|:---:|:---:|:---:|---|
+| refreshToken | String | 是 |  | 登录后保存的refreshToken |
+
+**返回值**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| code | Number | 状态码 |
+| msg | String | 提示信息 |
+| data | JSON | token信息 |
+
+**返回参数data说明**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| token | String | 新的用户登录凭证 |
+| refreshToken | String | 新的刷新token凭证 |
+
+```
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cC",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR"
+}
+```
+
 
 ## 1.2 用户相关
 ### 1.2.1 用户注册
@@ -142,7 +140,7 @@ token = md5(str) // token = "e47faedcccab34f2f91ddba207dad5f8"
 ```
 **接口方式** HTTP    
 **HTTP方法** POST    
-**URI路径** '/blogapi/reg'      
+**URI路径** '${apiServer}/blogapi/reg'      
 **参数**    
 
 | 参数名|数据类型|必须|默认|说明 |
@@ -188,16 +186,17 @@ token = md5(str) // token = "e47faedcccab34f2f91ddba207dad5f8"
 
 ### 1.2.2 登录
 ```
-用户登录，使用jwt加密方式
+用户登录，使用JWT验证方案
 ```
 **接口方式** HTTP    
 **HTTP方法** GET    
-**URI路径** '/admin/logout'      
+**URI路径** '${apiServer}/blogapi/logout'      
 **参数**    
 
 | 参数名|数据类型|必须|默认|说明 |
 |---|:---:|:---:|:---:|---|
-|  |  |  | |  |
+| account | String | 是 | | 用户名 |
+| password | String | 是 | | 密码(需要md5加密) |
 
 **返回值**
 
@@ -205,6 +204,21 @@ token = md5(str) // token = "e47faedcccab34f2f91ddba207dad5f8"
 |---|:---:|---|
 | code | Number | 状态码 |
 | msg | String | 提示信息 |
+| data | JSON | 登录信息 |
+
+**返回参数data说明**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| token | String | 用户登录凭证 |
+| refreshToken | String | 刷新token凭证 |
+
+```
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cC",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR"
+}
+```
 
 
 # 2. 用户管理

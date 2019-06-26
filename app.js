@@ -13,8 +13,7 @@ const koaJwt = require('koa-jwt')
 const config = require('config')
 global.config = config
 
-const tokenJwt = require('./libs/utils/token')
-const { Code } = require('./libs/consts')
+const { Code, Unless } = require('./libs/consts')
 const api = require('./routes/api/index')
 const admin = require('./routes/admin/index')
 
@@ -42,6 +41,7 @@ app.use(
   })
 )
 
+// jwt路由拦截
 app.use(async (ctx, next) => {
   return next().catch(err => {
     if (401 === err.status) {
@@ -55,13 +55,27 @@ app.use(async (ctx, next) => {
     }
   })
 })
-
+// 添加jwt中间件
 app.use(
   koaJwt({ secret: config.get('secret') })
-  // .unless({
-  //   path: [/^\/blogapi\/login/]
-  // })
+    .unless({
+      path: Unless
+    })
 )
+// 检测token是否通过
+// 检测token中是否包含isRefresh=true参数, 区分普通token与refreshToken
+app.use(async (ctx, next) => {
+  const { state } = ctx
+  if (state.user && state.user.isRefresh) {
+    ctx.status = 401
+    ctx.body = {
+      code: Code.ErrorToken.code,
+      msg: Code.ErrorToken.msg
+    }
+  } else {
+    await next()
+  }
+})
 
 //session
 app.keys = ['blogDataAPI']
