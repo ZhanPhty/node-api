@@ -148,7 +148,7 @@ token过期，进行续期
 | account | String | 是 | | 用户名 |
 | password | String | 是 | | 密码(需要md5加密) |
 | email | String | 是 | | 注册邮箱(未认证状态) |
-| nick | String | 否 | '新用户-****' | 密码(需要md5加密) |
+| nick | String | 否 | '新用户-****' | 用户昵称 |
 | captcha | String | 是 | | 图形验证码 |
 
 **返回值**
@@ -189,8 +189,8 @@ token过期，进行续期
 用户登录，使用JWT验证方案
 ```
 **接口方式** HTTP    
-**HTTP方法** GET    
-**URI路径** '${apiServer}/blogapi/logout'      
+**HTTP方法** POST    
+**URI路径** '${apiServer}/blogapi/login'      
 **参数**    
 
 | 参数名|数据类型|必须|默认|说明 |

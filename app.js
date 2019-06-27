@@ -9,7 +9,6 @@ const logger = require('koa-logger')
 const koaValidate = require('koa-validate')
 const session = require('koa-session')
 const koaJwt = require('koa-jwt')
-const cors = require('koa2-cors')
 
 const config = require('config')
 global.config = config
@@ -27,16 +26,6 @@ onerror(app)
 app.use(require('./middleware/redis')(config.get('redis'))) // redis
 app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
 
-app.use(cors({
-  origin: () => {
-    return '*'
-  },
-  exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
-  maxAge: 5,
-  credentials: true,
-  allowMethods: ['GET', 'PUT', 'POST', 'DELETE'],
-  allowHeaders: ['Content-Type', 'Authorization', 'Accept']
-}))
 app.use(
   bodyparser({
     enableTypes: ['json', 'form', 'text']
