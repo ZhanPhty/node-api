@@ -57,10 +57,9 @@ app.use(async (ctx, next) => {
 })
 // 添加jwt中间件
 app.use(
-  koaJwt({ secret: config.get('secret') })
-    .unless({
-      path: Unless
-    })
+  koaJwt({ secret: config.get('secret') }).unless({
+    path: Unless
+  })
 )
 // 检测token是否通过
 // 检测token中是否包含isRefresh=true参数, 区分普通token与refreshToken

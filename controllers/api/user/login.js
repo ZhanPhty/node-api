@@ -7,7 +7,7 @@ const { Code } = require('../../../libs/consts')
  * @create 2019-06-21 14:18:07
  */
 
-exports.login = async (ctx) => {
+exports.login = async ctx => {
   ctx.checkBody('account').notEmpty('账号不能为空')
   ctx.checkBody('password').notEmpty('密码不能为空')
 

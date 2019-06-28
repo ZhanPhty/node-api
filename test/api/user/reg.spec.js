@@ -19,7 +19,7 @@ describe('=== 用户注册模块 ===', () => {
     request(app)
       .post('/blogapi/reg')
       .send({
-        account: 'zhanphty',
+        account: `ceshi-${Date.now()}`,
         email: 'liuhaitao@cycredit.com.cn',
         password: crypto
           .createHash('md5')
@@ -32,6 +32,9 @@ describe('=== 用户注册模块 ===', () => {
         should.not.exist(err)
         res.status.should.equal(200)
         res.body.code.should.equal(200)
+        done()
+      })
+      .expect(400, (err, res) => {
         done()
       })
   })

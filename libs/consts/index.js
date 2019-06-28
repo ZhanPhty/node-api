@@ -1,5 +1,6 @@
 module.exports = {
   Code: require('./code'),
   User: require('./user'),
-  Unless: require('./unless')
+  Unless: require('./unless'),
+  Paginate: require('./paginate')
 }

@@ -5,6 +5,9 @@ module.exports = (blog, admin) => {
     },
     user: {
       User: blog.model('user', require('./user/user'))
+    },
+    article: {
+      Article: blog.model('article', require('./article/article'))
     }
   }
 

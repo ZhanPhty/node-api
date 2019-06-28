@@ -3,5 +3,6 @@ module.exports = [
   '/blogapi/reg',
   '/blogapi/reg/check/account',
   '/blogapi/service/captcha',
-  '/blogapi/service/renewal'
+  '/blogapi/service/renewal',
+  '/blogapi/articles'
 ]
