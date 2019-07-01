@@ -224,5 +224,336 @@ token过期，进行续期
 # 2. 用户管理
 
 
+# 3. 博客相关
+
+### 3.1.1 获取博客列表
+```
+默认获取全部博客列表
+```
+**接口方式** HTTP    
+**HTTP方法** GET    
+**URI路径** '${apiServer}/blogapi/articles'      
+**参数**    
+
+| 参数名|数据类型|必须|默认|说明 |
+|---|:---:|:---:|:---:|---|
+| page | Number | 否 | 1 | 页码 |
+| pageSize | Number | 否 | 10 | 页数 |
+
+**返回值**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| code | Number | 状态码 |
+| msg | String | 提示信息 |
+| data | JSON | 列表信息 |
+
+**返回参数data说明**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| items | Array | 列表 |
+| total | Number | 列表总和 |
+| pageSize | Number | 每页数 |
+| hasPrevPage | Boolean | 是否有上一页 |
+| hasNextPage | Boolean | 是否有下一页 |
+| currentPage | Number | 当前页码 |
+| pageCount | Number | 总页数 |
+| pagingCounter | Number | 页码计数 |
+| prev | Array | 上一页 |
+| next | Array | 下一页 |
+
+```
+"items": [
+    {
+        "user_info": {
+            "id": "5d0c893ce0358e52c4041548",
+            "nick": "小灰",
+            "cover": "",
+            "type": "client",
+            "is_root": false
+        },
+        "summary": "求富文本用js过滤部分标签",
+        "tags": [],
+        "read": 0,
+        "praise": 0,
+        "review": 0,
+        "_id": "5d15c2fb209b9d4100de123a",
+        "title": "测试文章2",
+        "type": "3",
+        "category": "2",
+        "__v": 0,
+        "last_revise": 1561965435629,
+        "deleted": false,
+        "created": 1561967621111
+    }
+],
+"total": 3,
+"pageSize": 10,
+"hasPrevPage": false,
+"hasNextPage": false,
+"currentPage": 1,
+"pageCount": 1,
+"pagingCounter": 1,
+"prev": null,
+"next": null
+```
+
+### 3.1.2 获取博客详情
+```
+获取博客详情，通过文章id查询
+```
+**接口方式** HTTP    
+**HTTP方法** GET    
+**URI路径** '${apiServer}/blogapi/article/detail/:id'      
+**参数**    
+
+| 参数名|数据类型|必须|默认|说明 |
+|---|:---:|:---:|:---:|---|
+
+**返回值**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| code | Number | 状态码 |
+| msg | String | 提示信息 |
+| data | JSON | 返回数据 |
+
+**返回参数data说明**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| title | String | 文章标题 |
+| content | String | 文章内容 |
+| summary | String | 文章简介 |
+| type | String | 文章类型 |
+| typeUrl | String | 转载Url |
+| category | String | 博文分类 |
+| tags | Array | 文章标签 |
+| seo | Obj | seo相关 |
+| seo.title | String  | seo的title |
+| seo.keywords | String  | seo的key |
+| seo.description | String | seo的desc |
+| userInfo | Obj | 用户信息 |
+| userInfo.id | Obj | 用户ID |
+| userInfo.nick | Obj | 用户昵称 |
+| userInfo.cover | Obj | 用户头像 |
+| userInfo.type | Obj | 用户类型 |
+| userInfo.is_root | Boolean | 是否管理员 |
+| read | Number | 阅读量 |
+| praise | Number | 点赞数 |
+| review | Number | 评论量 |
+| created | Number | 发布时间 |
+
+```
+{
+    "title": "测试文章",
+    "content": "<div class=c-abstract>2016年10月31日求<em>富文本</em>用<em>js过滤</em>部分<em>标签<em>但保留文本内容代码! 更多帖子 关注 空间 博客  laienshun  本版专家分:0  结帖率 0% 比如我从其他地方复制了一段文本,里...</div>",
+    "summary": "2016年10月31日求富文本用js过滤部分标签但保留文本内容代码!更多帖子关注空间博客laienshun本版专家分:0结帖率0%比如我从其他地方复制了一段文本,里...",
+    "type": "1",
+    "category": "1",
+    "tags": [],
+    "seo": {},
+    "userInfo": {
+        "id": "5d0c893ce0358e52c4041548",
+        "nick": "小灰",
+        "cover": "",
+        "type": "admin",
+        "is_root": false
+    },
+    "read": 0,
+    "praise": 0,
+    "review": 0,
+    "created": 1561963036271
+}
+```
+
+### 3.1.3 发布博文
+```
+发布博文
+```
+**接口方式** HTTP    
+**HTTP方法** POST    
+**URI路径** '${apiServer}/blogapi/article/section'      
+**参数**    
+
+| 参数名|数据类型|必须|默认|说明 |
+|---|:---:|:---:|:---:|---|
+| title | String | 是 |  | 文章标题 |
+| content | String | 是 |  | 文章内容 |
+| summary | String | 否 | `content`中提取 | 文章简介 |
+| type | String | 是 |  | 文章类型: 'original-原创', 'copy-转载' |
+| typeUrl | String | 否 |  | 转载Url |
+| category | String | 是 |  | 博文分类 |
+| tags | Array | 否 |  | 文章标签 |
+| cover | String | 否 |  | 博文封面 |
+| isPrivate | Boolean | 否 |  | 是否私密文章 |
+| status | String | 否 | 'draft' | 博文状态：草稿-'draft'、上线-'online', 软删除-'delete' |
+| seo | Obj | 否 |  | seo自定义 |
+| seo.title | String | 否 |  | seo的title |
+| seo.keywords | String | 否 |  | seo的key |
+| seo.description | String | 否 |  | seo的desc |
+
+**返回值**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| code | Number | 状态码 |
+| msg | String | 提示信息 |
+| data | JSON | 返回数据 |
+
+**返回参数data说明**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| title | String | 文章标题 |
+| content | String | 文章内容 |
+| summary | String | 文章简介 |
+| type | String | 文章类型 |
+| typeUrl | String| 转载Url |
+| category | String | 博文分类 |
+| tags | Array | 文章标签 |
+| seo | Obj | seo相关 |
+| seo.title | String  | seo的title |
+| seo.keywords | String  | seo的key |
+| seo.description | String | seo的desc |
+| userInfo | Obj | 用户信息 |
+| userInfo.id | Obj | 用户ID |
+| userInfo.nick | Obj | 用户昵称 |
+| userInfo.cover | Obj | 用户头像 |
+| userInfo.type | Obj | 用户类型 |
+| userInfo.is_root | Boolean | 是否管理员 |
+| read | Number | 阅读量 |
+| praise | Number | 点赞数 |
+| review | Number | 评论量 |
+| created | Number | 发布时间 |
+
+```
+{
+    "title": "测试文章",
+    "content": "<div class=c-abstract>2016年10月31日求<em>富文本</em>用<em>js过滤</em>部分<em>标签<em>但保留文本内容代码! 更多帖子 关注 空间 博客  laienshun  本版专家分:0  结帖率 0% 比如我从其他地方复制了一段文本,里...</div>",
+    "summary": "2016年10月31日求富文本用js过滤部分标签但保留文本内容代码!更多帖子关注空间博客laienshun本版专家分:0结帖率0%比如我从其他地方复制了一段文本,里...",
+    "type": "1",
+    "category": "1",
+    "tags": [],
+    "seo": {},
+    "userInfo": {
+        "id": "5d0c893ce0358e52c4041548",
+        "nick": "小灰",
+        "cover": "",
+        "type": "admin",
+        "is_root": false
+    },
+    "read": 0,
+    "praise": 0,
+    "review": 0,
+    "created": 1561963036271
+}
+```
+
+### 3.1.4 修改博文
+```
+修改博文, 通过文章id
+```
+**接口方式** HTTP    
+**HTTP方法** PUT   
+**URI路径** '${apiServer}/blogapi/article/section/:id'      
+**参数**    
+
+| 参数名|数据类型|必须|默认|说明 |
+|---|:---:|:---:|:---:|---|
+| title | String | 是 |  | 文章标题 |
+| content | String | 是 |  | 文章内容 |
+| summary | String | 否 | `content`中提取 | 文章简介 |
+| type | String | 是 |  | 文章类型: 'original-原创', 'copy-转载'|
+| typeUrl | String | 否 |  | 转载Url |
+| category | String | 是 |  | 博文分类 |
+| tags | Array | 否 |  | 文章标签 |
+| cover | String | 否 |  | 博文封面 |
+| isPrivate | Boolean | 否 |  | 是否私密文章 |
+| status | String | 否 | 'draft' | 博文状态：草稿-'draft'、上线-'online', 软删除-'delete' |
+| seo | Obj | 否 |  | seo自定义 |
+| seo.title | String | 否 |  | seo的title |
+| seo.keywords | String | 否 |  | seo的key |
+| seo.description | String | 否 |  | seo的desc |
+
+**返回值**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| code | Number | 状态码 |
+| msg | String | 提示信息 |
+| data | JSON | 返回数据 |
+
+**返回参数data说明**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| title | String | 文章标题 |
+| content | String | 文章内容 |
+| summary | String | 文章简介 |
+| type | String | 文章类型 |
+| typeUrl | String  | 转载Url |
+| category | String | 博文分类 |
+| tags | Array | 文章标签 |
+| seo | Obj | seo相关 |
+| seo.title | String  | seo的title |
+| seo.keywords | String  | seo的key |
+| seo.description | String | seo的desc |
+| userInfo | Obj | 用户信息 |
+| userInfo.id | Obj | 用户ID |
+| userInfo.nick | Obj | 用户昵称 |
+| userInfo.cover | Obj | 用户头像 |
+| userInfo.type | Obj | 用户类型 |
+| userInfo.is_root | Boolean | 是否管理员 |
+| read | Number | 阅读量 |
+| praise | Number | 点赞数 |
+| review | Number | 评论量 |
+| created | Number | 发布时间 |
+
+```
+{
+    "title": "测试文章",
+    "content": "<div class=c-abstract>2016年10月31日求<em>富文本</em>用<em>js过滤</em>部分<em>标签<em>但保留文本内容代码! 更多帖子 关注 空间 博客  laienshun  本版专家分:0  结帖率 0% 比如我从其他地方复制了一段文本,里...</div>",
+    "summary": "2016年10月31日求富文本用js过滤部分标签但保留文本内容代码!更多帖子关注空间博客laienshun本版专家分:0结帖率0%比如我从其他地方复制了一段文本,里...",
+    "type": "1",
+    "category": "1",
+    "tags": [],
+    "seo": {},
+    "userInfo": {
+        "id": "5d0c893ce0358e52c4041548",
+        "nick": "小灰",
+        "cover": "",
+        "type": "admin",
+        "is_root": false
+    },
+    "read": 0,
+    "praise": 0,
+    "review": 0,
+    "created": 1561963036271
+}
+```
+
+### 3.1.4 删除博文
+```
+删除博文，文章id
+```
+**接口方式** HTTP    
+**HTTP方法** DELETE   
+**URI路径** '${apiServer}/blogapi/article/section/:id'      
+**参数**    
+
+| 参数名|数据类型|必须|默认|说明 |
+|---|:---:|:---:|:---:|---|
+
+**返回值**
+
+| 参数名|数据类型|说明 |
+|---|:---:|---|
+| code | Number | 状态码 |
+| msg | String | 提示信息 |
+
+
+
 
 

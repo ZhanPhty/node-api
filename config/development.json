@@ -21,12 +21,6 @@
       }
     }
   },
-  "redis": {
-    "host": "127.0.0.1",
-    "port": 6379,
-    "connectTimeout": 3000,
-    "db": 0
-  },
   "limit": 10,
   "secret": "Blog@&06dFAj"
 }

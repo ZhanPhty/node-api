@@ -23,7 +23,6 @@ koaValidate(app)
 onerror(app)
 
 // middlewares
-app.use(require('./middleware/redis')(config.get('redis'))) // redis
 app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
 
 app.use(

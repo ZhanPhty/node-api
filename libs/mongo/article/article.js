@@ -6,6 +6,7 @@ let Schema = new mongoose.Schema({
   content: { type: String, required: true, comment: '文章内容' },
   summary: { type: String, default: '', comment: '文章简介' },
   type: { type: String, required: true, comment: '文章类型' },
+  type_url: { type: String, alias: 'typeUrl', comment: '转载url' },
   category: { type: String, required: true, comment: '博文分类' },
   tags: { type: Array, default: [], comment: '文章标签' },
   cover: { type: String, comment: '文章封面' },
@@ -27,7 +28,11 @@ let Schema = new mongoose.Schema({
   praise: { type: Number, default: 0, comment: '点赞量' },
   review: { type: Number, default: 0, comment: '评论量' },
   last_revise: { type: Number, alias: 'lastRevise', comment: '最后修改时间' },
-  created: { type: Number, default: Date.now, comment: '文章创建时间' }
+  created: { type: Number, default: Date.now, comment: '文章创建时间' },
+  delete_at: { type: Number, alias: 'deleteAt', comment: '文章软删除时间' },
+  toped: { type: Boolean, default: false, comment: '置顶文章' },
+  hotted: { type: Boolean, default: false, comment: '热门文章' },
+  weight: { type: Number, default: 0, comment: '文章权重' }
 })
 
 Schema.methods = {
@@ -35,12 +40,13 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  formatArticle: function() {
+  formatArticle: function () {
     return {
       title: this.title,
       content: this.content,
       summary: this.summary,
       type: this.type,
+      typeUrl: this.type_url,
       category: this.category,
       tags: this.tags,
       cover: this.cover,
@@ -49,8 +55,26 @@ Schema.methods = {
       read: this.read,
       praise: this.praise,
       review: this.review,
-      last_revise: this.lastRevise,
-      created: this.created
+      lastRevise: this.last_revise,
+      created: this.created,
+      hotted: this.hotted
+    }
+  }
+}
+
+// 静态方法
+Schema.statics = {
+  /**
+   * 更新权重
+   * 阅读、评论、点赞、设置置顶、设置热门、都可增加权重
+   */
+  updateWeight: async function (account, password) {
+    let result = await this.findOne({ account }).exec()
+
+    if (result && result.password === tool.md5(`${password}${result.password_salt}`)) {
+      return Promise.resolve(result)
+    } else {
+      return Promise.resolve(null)
     }
   }
 }
