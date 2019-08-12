@@ -3,7 +3,8 @@ module.exports = {
     article: require('./article/article')
   },
   common: {
-    service: require('./common/service')
+    service: require('./common/service'),
+    upload: require('./common/upload')
   },
   user: {
     login: require('./user/login'),

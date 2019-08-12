@@ -11,5 +11,13 @@
         "poolSize": 10
       }
     }
+  },
+  "limit": 15,
+  "secret": "Blog@&Zh09Ao",
+  "qiniu": {
+    "accessKey": "DBAfsq8MjffPKCJInlmCTLlLLiUbmnV9f4MrhLUo",
+    "secretKey": "f0U98I5wK8kOYgdayEvCtNTMU0ReIRj1z_weKmnO",
+    "bucket": "cdn-uizph",
+    "baseUrl": "//cdn.uizph.com"
   }
 }

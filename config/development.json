@@ -21,6 +21,12 @@
       }
     }
   },
-  "limit": 10,
-  "secret": "Blog@&06dFAj"
+  "limit": 15,
+  "secret": "Blog@&06dFAj",
+  "qiniu": {
+    "accessKey": "DBAfsq8MjffPKCJInlmCTLlLLiUbmnV9f4MrhLUo",
+    "secretKey": "f0U98I5wK8kOYgdayEvCtNTMU0ReIRj1z_weKmnO",
+    "bucket": "testcdn-uizph",
+    "baseUrl": "//testcdn.uizph.com"
+  }
 }

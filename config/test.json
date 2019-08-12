@@ -11,5 +11,9 @@
         "poolSize": 10
       }
     }
+  },
+  "qiniu": {
+    "accessKey": "DBAfsq8MjffPKCJInlmCTLlLLiUbmnV9f4MrhLUo",
+    "secretKey": "f0U98I5wK8kOYgdayEvCtNTMU0ReIRj1z_weKmnO"
   }
 }

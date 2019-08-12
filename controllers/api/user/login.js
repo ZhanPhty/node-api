@@ -32,7 +32,8 @@ exports.login = async ctx => {
       code: Code.OK.code,
       msg: Code.OK.msg,
       data: {
-        ...newToken
+        ...newToken,
+        userInfo: result.formatClient()
       }
     }
   } else {

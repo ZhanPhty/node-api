@@ -3,12 +3,13 @@ const app = new Koa()
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
-const bodyparser = require('koa-bodyparser')
+// const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
 const koaValidate = require('koa-validate')
 const session = require('koa-session')
 const koaJwt = require('koa-jwt')
+const koaBody = require('koa-body')
 
 const config = require('config')
 global.config = config
@@ -25,11 +26,14 @@ onerror(app)
 // middlewares
 app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
 
-app.use(
-  bodyparser({
-    enableTypes: ['json', 'form', 'text']
-  })
-)
+app.use(koaBody({
+  multipart: true
+}))
+// app.use(
+//   bodyparser({
+//     enableTypes: ['json', 'form', 'text']
+//   })
+// )
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))

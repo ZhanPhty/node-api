@@ -104,13 +104,14 @@ exports.publish = async (ctx, next) => {
 
   const userInfo = await ctx.mongo.user.User.findOne({ _id: ctx.state.user.uid }).exec()
   const body = ctx.request.body
-  const summaryStr = body.summary || tool.filterHtml(body.content).substring(0, 200)
+  const summaryStr = body.summary || tool.filterHtml(body.content).substring(0, 240)
 
   if (userInfo && userInfo.type === 'admin') {
     const create = {
       title: body.title,
       content: body.content,
       summary: summaryStr,
+      cover: body.cover,
       tags: body.tags,
       type: body.type,
       type_url: body.typeUrl,

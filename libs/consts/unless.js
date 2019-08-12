@@ -5,5 +5,6 @@ module.exports = [
   '/blogapi/service/captcha',
   '/blogapi/service/renewal',
   '/blogapi/articles',
+  '/blogapi/upload',
   /^\/blogapi\/article\/detail\//
 ]
