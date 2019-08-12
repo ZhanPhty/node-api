@@ -6,5 +6,6 @@ module.exports = [
   '/blogapi/service/renewal',
   '/blogapi/articles',
   '/blogapi/upload',
+  /^\/blogapi\/select\//,
   /^\/blogapi\/article\/detail\//
 ]

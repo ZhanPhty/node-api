@@ -8,6 +8,11 @@ module.exports = (blog, admin) => {
     },
     article: {
       Article: blog.model('article', require('./article/article'))
+    },
+    select: {
+      Types: blog.model('type', require('./select/types')),
+      Category: blog.model('category', require('./select/category')),
+      Tag: blog.model('tag', require('./select/tag'))
     }
   }
 

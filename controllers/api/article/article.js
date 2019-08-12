@@ -58,7 +58,6 @@ exports.list = async (ctx, next) => {
  * 返回文章详情
  */
 exports.single = async (ctx, next) => {
-  console.log(ctx.state.article)
   const item = ctx.state.article
   ctx.body = {
     code: Code.OK.code,
