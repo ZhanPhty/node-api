@@ -42,6 +42,7 @@ Schema.methods = {
    */
   formatArticle: function () {
     return {
+      id: this._id,
       title: this.title,
       content: this.content,
       summary: this.summary,
@@ -64,6 +65,20 @@ Schema.methods = {
 
 // 静态方法
 Schema.statics = {
+  /**
+   * 查询分类博文的数量
+   * @param {String} category     需查询的分类
+   */
+  findCategory: async function (category) {
+    let count = await this.countDocuments({ category })
+
+    if (count) {
+      return Promise.resolve(count)
+    } else {
+      return Promise.resolve(null)
+    }
+  },
+
   /**
    * 更新权重
    * 阅读、评论、点赞、设置置顶、设置热门、都可增加权重

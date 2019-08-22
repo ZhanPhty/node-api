@@ -3,6 +3,7 @@ module.exports = {
     article: require('./article/article')
   },
   common: {
+    banner: require('./common/banner'),
     service: require('./common/service'),
     upload: require('./common/upload')
   },

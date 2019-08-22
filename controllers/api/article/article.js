@@ -15,6 +15,7 @@ const { tool } = require('../../../libs/utils')
 exports.list = async (ctx, next) => {
   const page = ctx.query.page ? parseInt(ctx.query.page) : 1
   const limit = ctx.query.pageSize ? parseInt(ctx.query.pageSize) : config.get('limit')
+  const category = ctx.query.category
 
   let errors = []
   if (ctx.errors) {
@@ -27,12 +28,65 @@ exports.list = async (ctx, next) => {
     return
   }
 
-  await ctx.mongo.article.Article.paginate(
-    { status: 'online', is_private: false },
+  let paginateQuery = { status: 'online', is_private: false }
+  if (category && category !== '') paginateQuery.category = category
+  await ctx.mongo.article.Article.paginate(paginateQuery,
     {
       select: '-is_private -status -content -delete_at',
+      sort: { created: -1 },
       page,
       limit,
+      customLabels: Paginate
+    },
+    (err, res) => {
+      if (err) {
+        ctx.body = {
+          code: Code.BadRequest.code,
+          msg: Code.BadRequest.msg,
+          errors
+        }
+      } else {
+        ctx.body = {
+          code: Code.OK.code,
+          msg: Code.OK.msg,
+          data: res
+        }
+      }
+    }
+  )
+}
+
+/**
+ * 博客热门文章
+ * 根据阅读量进行排序推荐
+ * 默认查询10条文章
+ * @link https://mongoosejs.com/docs/api.html#query_Query-select
+ * @author 詹鹏辉
+ * @create 2019-08-21 16:05:27
+ */
+
+exports.hot = async (ctx, next) => {
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  await ctx.mongo.article.Article.paginate(
+    {
+      status: 'online',
+      is_private: false
+    },
+    {
+      select: 'title read review praise hotted',
+      sort: { read: -1, review: -1 },
+      page: 1,
+      limit: 10,
       customLabels: Paginate
     },
     (err, res) => {
@@ -128,6 +182,10 @@ exports.publish = async (ctx, next) => {
     }
     const result = await ctx.mongo.article.Article.create(create)
 
+    // 处理分类统计数量
+    const count = await ctx.mongo.article.Article.findCategory(body.category)
+    await ctx.mongo.select.Category.updateCount(body.category, count)
+
     return (ctx.body = {
       code: Code.OK.code,
       msg: Code.OK.msg,
@@ -174,7 +232,11 @@ exports.delete = async (ctx, next) => {
 
   body.status = 'delete'
   body.delete_at = Date.now()
-  body.save()
+  await body.save()
+
+  // 处理分类统计数量
+  const count = await body.findCategory(body.category)
+  await ctx.mongo.select.Category.updateCount(body.category, count)
 
   ctx.body = {
     code: Code.OK.code,
@@ -200,4 +262,21 @@ exports.getById = async (ctx, next) => {
     }
     return
   }
+}
+
+/**
+ * 更新tag
+ * 当不存在的时候插入tag, 存在则忽略
+ */
+exports.updateTag = async (ctx, next) => {
+  const body = ctx.request.body
+
+  if (body.tags && body.tags.length > 0) {
+    body.tags.map(async item => {
+      await ctx.mongo.select.Tag.updateOne({ name: { '$in': [item] } }, {
+        $set: { name: item }
+      }, { upsert: true })
+    })
+  }
+  await next()
 }

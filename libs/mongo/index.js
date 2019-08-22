@@ -3,6 +3,9 @@ module.exports = (blog, admin) => {
     auth: {
       Permission: admin.model('permission', require('./auth/permission'))
     },
+    common: {
+      Banner: blog.model('banner', require('./common/banner'))
+    },
     user: {
       User: blog.model('user', require('./user/user'))
     },
