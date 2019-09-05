@@ -1,5 +1,6 @@
 const { Code, Paginate } = require('../../../libs/consts')
-const { tool } = require('../../../libs/utils')
+const { tool, token } = require('../../../libs/utils')
+const requestIp = require('request-ip')
 
 /**
  * 博客文章列表
@@ -11,7 +12,6 @@ const { tool } = require('../../../libs/utils')
  * @param {Number} page           分页
  * @param {Number} pageSize       页码
  */
-
 exports.list = async (ctx, next) => {
   const page = ctx.query.page ? parseInt(ctx.query.page) : 1
   const limit = ctx.query.pageSize ? parseInt(ctx.query.pageSize) : config.get('limit')
@@ -57,6 +57,57 @@ exports.list = async (ctx, next) => {
 }
 
 /**
+ * 博客推荐文章
+ * @link https://mongoosejs.com/docs/api.html#query_Query-select
+ * @author 詹鹏辉
+ * @create 2019-08-26 13:55:07
+ */
+exports.recommend = async (ctx, next) => {
+  const page = ctx.query.page ? parseInt(ctx.query.page) : 1
+  const limit = ctx.query.pageSize ? parseInt(ctx.query.pageSize) : config.get('limit')
+
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  await ctx.mongo.article.Article.paginate(
+    {
+      status: 'online',
+      is_private: false
+    },
+    {
+      select: '-is_private -status -content -delete_at',
+      sort: { weight: -1, created: -1 },
+      page,
+      limit,
+      customLabels: Paginate
+    },
+    (err, res) => {
+      if (err) {
+        ctx.body = {
+          code: Code.BadRequest.code,
+          msg: Code.BadRequest.msg,
+          errors
+        }
+      } else {
+        ctx.body = {
+          code: Code.OK.code,
+          msg: Code.OK.msg,
+          data: res
+        }
+      }
+    }
+  )
+}
+
+/**
  * 博客热门文章
  * 根据阅读量进行排序推荐
  * 默认查询10条文章
@@ -64,7 +115,6 @@ exports.list = async (ctx, next) => {
  * @author 詹鹏辉
  * @create 2019-08-21 16:05:27
  */
-
 exports.hot = async (ctx, next) => {
   let errors = []
   if (ctx.errors) {
@@ -108,11 +158,102 @@ exports.hot = async (ctx, next) => {
 }
 
 /**
+ * 模糊搜索文字
+ * @author 詹鹏辉
+ * @create 2019-08-26 14:35:45
+ */
+exports.search = async (ctx, next) => {
+  const page = ctx.query.page ? parseInt(ctx.query.page) : 1
+  const limit = ctx.query.pageSize ? parseInt(ctx.query.pageSize) : config.get('limit')
+  const keyword = ctx.query.keyword || ''
+  const tag = ctx.query.tag || ''
+
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  let findQuery = {}
+  if (keyword !== '') {
+    findQuery = {
+      $or: [
+        { title: { $regex: keyword, $options: 'ix' } },
+        { content: { $regex: keyword, $options: 'ix' } }
+      ]
+    }
+  } else if (tag !== '') {
+    findQuery = {
+      tags: {
+        $elemMatch: { $eq: tag }
+      }
+    }
+  }
+  await ctx.mongo.article.Article.paginate(
+    {
+      status: 'online',
+      is_private: false,
+      ...findQuery
+    },
+    {
+      select: '-is_private -status -content -delete_at',
+      sort: { created: -1 },
+      page,
+      limit,
+      customLabels: Paginate
+    },
+    (err, res) => {
+      if (err) {
+        ctx.body = {
+          code: Code.BadRequest.code,
+          msg: Code.BadRequest.msg,
+          errors
+        }
+      } else {
+        ctx.body = {
+          code: Code.OK.code,
+          msg: Code.OK.msg,
+          data: res
+        }
+      }
+    }
+  )
+}
+
+/**
  * 查询单条数据
  * 返回文章详情
  */
 exports.single = async (ctx, next) => {
   const item = ctx.state.article
+  const header = ctx.header
+
+  ctx.mongo.article.Article.updateIncDoc('read', item._id)
+  ctx.mongo.article.Article.updateWeight(item._id)
+  item.isPraise = false
+
+  // 获取header.authorization 判断是否登录状态
+  // 根据登录状态获取用户id
+  // 通过文章id、用户id获取当篇文章是否已经点赞
+  if (header.authorization) {
+    const auth = header.authorization.split(' ')
+    const userInfo = await token.checkToken(auth[1], config.secret)
+
+    if (userInfo.uid) {
+      const find = await ctx.mongo.article.Like.findOne({
+        article_id: item._id,
+        user_id: userInfo.uid
+      }).exec()
+
+      find && (item.isPraise = true)
+    }
+  }
+
   ctx.body = {
     code: Code.OK.code,
     msg: Code.OK.msg,
@@ -137,7 +278,6 @@ exports.single = async (ctx, next) => {
  * @param {String} seo.keywords     seo的key
  * @param {String} seo.description  seo的desc
  */
-
 exports.publish = async (ctx, next) => {
   ctx.checkBody('title').notEmpty('标题不能为空')
   ctx.checkBody('content').notEmpty('内容不能为空')
@@ -155,12 +295,14 @@ exports.publish = async (ctx, next) => {
     return
   }
 
+  const clientIp = requestIp.getClientIp(ctx)
   const userInfo = await ctx.mongo.user.User.findOne({ _id: ctx.state.user.uid }).exec()
   const body = ctx.request.body
   const summaryStr = body.summary || tool.filterHtml(body.content).substring(0, 240)
 
   if (userInfo && userInfo.type === 'admin') {
     const create = {
+      ip: clientIp,
       title: body.title,
       content: body.content,
       summary: summaryStr,
@@ -213,13 +355,69 @@ exports.update = async (ctx, next) => {
 
   body.summary = summaryStr
   body.lastRevise = Date.now()
-  await body.save()
 
-  ctx.body = {
-    code: Code.OK.code,
-    msg: Code.OK.msg,
-    data: body.formatArticle()
+  const result = await body.save()
+
+  if (result) {
+    ctx.body = {
+      code: Code.OK.code,
+      msg: Code.OK.msg,
+      data: body.formatArticle()
+    }
+  } else {
+    return (ctx.body = {
+      code: Code.Forbidden.code,
+      msg: '权限不足，无法发布文章'
+    })
   }
+}
+
+/**
+ * 获取草稿文章列表
+ * 文章状态: draft
+ */
+exports.draft = async (ctx, next) => {
+  const page = ctx.query.page ? parseInt(ctx.query.page) : 1
+  const limit = ctx.query.pageSize ? parseInt(ctx.query.pageSize) : config.get('limit')
+
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  await ctx.mongo.article.Article.paginate({
+    status: 'draft',
+    'user_info.id': ctx.state.user.uid
+  },
+    {
+      select: '-is_private -status -content -delete_at',
+      sort: { created: -1 },
+      page,
+      limit,
+      customLabels: Paginate
+    },
+    (err, res) => {
+      if (err) {
+        ctx.body = {
+          code: Code.BadRequest.code,
+          msg: Code.BadRequest.msg,
+          errors
+        }
+      } else {
+        ctx.body = {
+          code: Code.OK.code,
+          msg: Code.OK.msg,
+          data: res
+        }
+      }
+    }
+  )
 }
 
 /**
@@ -233,10 +431,6 @@ exports.delete = async (ctx, next) => {
   body.status = 'delete'
   body.delete_at = Date.now()
   await body.save()
-
-  // 处理分类统计数量
-  const count = await body.findCategory(body.category)
-  await ctx.mongo.select.Category.updateCount(body.category, count)
 
   ctx.body = {
     code: Code.OK.code,

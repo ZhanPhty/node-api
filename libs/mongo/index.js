@@ -10,7 +10,9 @@ module.exports = (blog, admin) => {
       User: blog.model('user', require('./user/user'))
     },
     article: {
-      Article: blog.model('article', require('./article/article'))
+      Article: blog.model('article', require('./article/article')),
+      Like: blog.model('like', require('./article/like')),
+      Comment: blog.model('comment', require('./article/comment'))
     },
     select: {
       Types: blog.model('type', require('./select/types')),

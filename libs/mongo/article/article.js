@@ -32,7 +32,8 @@ let Schema = new mongoose.Schema({
   delete_at: { type: Number, alias: 'deleteAt', comment: '文章软删除时间' },
   toped: { type: Boolean, default: false, comment: '置顶文章' },
   hotted: { type: Boolean, default: false, comment: '热门文章' },
-  weight: { type: Number, default: 0, comment: '文章权重' }
+  weight: { type: Number, default: 0, comment: '文章权重' },
+  ip: { type: String, comment: 'ip' }
 })
 
 Schema.methods = {
@@ -44,6 +45,7 @@ Schema.methods = {
     return {
       id: this._id,
       title: this.title,
+      isPrivate: this.is_private,
       content: this.content,
       summary: this.summary,
       type: this.type,
@@ -55,10 +57,12 @@ Schema.methods = {
       userInfo: this.user_info,
       read: this.read,
       praise: this.praise,
+      isPraise: this.isPraise,
       review: this.review,
       lastRevise: this.last_revise,
       created: this.created,
-      hotted: this.hotted
+      hotted: this.hotted,
+      status: this.status
     }
   }
 }
@@ -70,23 +74,57 @@ Schema.statics = {
    * @param {String} category     需查询的分类
    */
   findCategory: async function (category) {
-    let count = await this.countDocuments({ category })
+    let count = await this.countDocuments({ category, status: 'online', is_private: false })
 
-    if (count) {
-      return Promise.resolve(count)
-    } else {
-      return Promise.resolve(null)
-    }
+    return Promise.resolve(count)
+  },
+
+  /**
+   * 更新文档，自增或自减
+   * 添加阅读量、更新点赞数、更新评论数
+   * @param {String} key         要更新的字段
+   * @param {String} aid         文章id
+   */
+  updateIncDoc: function (key, aid, num = 1) {
+    this.findOneAndUpdate({ _id: aid }, { $inc: { [key]: num } }, { useFindAndModify: false }, () => { })
   },
 
   /**
    * 更新权重
-   * 阅读、评论、点赞、设置置顶、设置热门、都可增加权重
+   * 评论、阅读、点赞都可增加权重
+   * ========================================
+   * Score = (P + (R / 100) + (L * 2)) / (T+2)^G
+   * P = 评价的数量
+   * R = 文章阅读数( 除于100，降低阅读的权重 )
+   * L = 文章点赞数( 乘于3，提高点赞的权重 )
+   * T = 从文章提交至今的时间(小时) 
+   * G = 比重，缺省值是1.8，G值越大，排名下降得越快
+   * ========================================
+   * @param {String} aid         文章id
    */
-  updateWeight: async function (account, password) {
-    let result = await this.findOne({ account }).exec()
+  updateWeight: async function (aid) {
+    const { review, read, praise, created } = await this.findOne({ _id: aid }).exec()
+    const currentDate = (Date.now() - created) / 1000 / 60 / 60  // 小时
+    const gravity = currentDate > 720 ? 2 : 1.5  // 超过720小时比重提升到2.0
+    let score = (review + (read / 100) + (praise * 2)) / Math.pow((currentDate + 2), gravity)
 
-    if (result && result.password === tool.md5(`${password}${result.password_salt}`)) {
+    this.updateOne({ _id: aid }, {
+      $set: { weight: score }
+    }, { upsert: true }, () => { })
+  },
+
+  /**
+   * 更新分类的统计数量
+   * @param {String} key          要更新的字段
+   * @param {String} aid          文章id
+   * @param {Number} count        统计总数
+   */
+  updateCount: async function (key, aid, count) {
+    let result = await this.updateOne({ _id: aid }, {
+      $set: { [key]: count }
+    }, { upsert: true })
+
+    if (result) {
       return Promise.resolve(result)
     } else {
       return Promise.resolve(null)

@@ -1,6 +1,7 @@
 module.exports = {
   article: {
-    article: require('./article/article')
+    article: require('./article/article'),
+    action: require('./article/action')
   },
   common: {
     banner: require('./common/banner'),

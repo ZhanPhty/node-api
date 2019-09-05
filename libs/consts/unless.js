@@ -6,6 +6,11 @@ module.exports = [
   '/blogapi/service/renewal',
   '/blogapi/articles',
   '/blogapi/upload',
+  '/blogapi/banner',
+  '/blogapi/article/hot',
+  '/blogapi/article/recommend',
+  '/blogapi/article/search',
+  /^\/blogapi\/action\/.*\/comments/,
   /^\/blogapi\/select\//,
   /^\/blogapi\/article\/detail\//
 ]
