@@ -147,7 +147,10 @@ exports.list = async (ctx, next) => {
  */
 exports.comment = async (ctx, next) => {
   ctx.checkBody('content').notEmpty('评论内容不能为空')
-  ctx.checkBody('replyUser').empty().default('')
+  ctx
+    .checkBody('replyUser')
+    .empty()
+    .default('')
 
   const { id } = ctx.params
   const body = ctx.request.body

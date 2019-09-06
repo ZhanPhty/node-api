@@ -18,7 +18,7 @@ module.exports.types = async (ctx, next) => {
   }
 
   let result = await ctx.mongo.select.Types.find()
-  result = result.map((item) => item.format())
+  result = result.map(item => item.format())
 
   ctx.body = {
     code: Code.OK.code,
@@ -45,7 +45,7 @@ module.exports.category = async (ctx, next) => {
   }
 
   let result = await ctx.mongo.select.Category.find()
-  result = result.map((item) => {
+  result = result.map(item => {
     return item.format()
   })
 
@@ -73,7 +73,7 @@ module.exports.tag = async (ctx, next) => {
   }
 
   let result = await ctx.mongo.select.Tag.find()
-  result = result.map((item) => {
+  result = result.map(item => {
     return item.format()
   })
 

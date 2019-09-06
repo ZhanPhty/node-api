@@ -28,6 +28,13 @@ exports.login = async ctx => {
   if (result) {
     const newToken = await token.createToken(result._id, config.get('secret'))
 
+    await ctx.mongo.user.User.updateOne(
+      { _id: result._id },
+      {
+        $set: { last_login: Date.now() }
+      }
+    )
+
     ctx.body = {
       code: Code.OK.code,
       msg: Code.OK.msg,

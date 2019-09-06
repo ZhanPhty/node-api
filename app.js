@@ -26,9 +26,11 @@ onerror(app)
 // middlewares
 app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
 
-app.use(koaBody({
-  multipart: true
-}))
+app.use(
+  koaBody({
+    multipart: true
+  })
+)
 // app.use(
 //   bodyparser({
 //     enableTypes: ['json', 'form', 'text']

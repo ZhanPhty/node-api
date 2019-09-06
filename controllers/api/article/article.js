@@ -30,7 +30,8 @@ exports.list = async (ctx, next) => {
 
   let paginateQuery = { status: 'online', is_private: false }
   if (category && category !== '') paginateQuery.category = category
-  await ctx.mongo.article.Article.paginate(paginateQuery,
+  await ctx.mongo.article.Article.paginate(
+    paginateQuery,
     {
       select: '-is_private -status -content -delete_at',
       sort: { created: -1 },
@@ -182,10 +183,7 @@ exports.search = async (ctx, next) => {
   let findQuery = {}
   if (keyword !== '') {
     findQuery = {
-      $or: [
-        { title: { $regex: keyword, $options: 'ix' } },
-        { content: { $regex: keyword, $options: 'ix' } }
-      ]
+      $or: [{ title: { $regex: keyword, $options: 'ix' } }, { content: { $regex: keyword, $options: 'ix' } }]
     }
   } else if (tag !== '') {
     findQuery = {
@@ -391,10 +389,11 @@ exports.draft = async (ctx, next) => {
     return
   }
 
-  await ctx.mongo.article.Article.paginate({
-    status: 'draft',
-    'user_info.id': ctx.state.user.uid
-  },
+  await ctx.mongo.article.Article.paginate(
+    {
+      status: 'draft',
+      'user_info.id': ctx.state.user.uid
+    },
     {
       select: '-is_private -status -content -delete_at',
       sort: { created: -1 },
@@ -467,9 +466,13 @@ exports.updateTag = async (ctx, next) => {
 
   if (body.tags && body.tags.length > 0) {
     body.tags.map(async item => {
-      await ctx.mongo.select.Tag.updateOne({ name: { '$in': [item] } }, {
-        $set: { name: item }
-      }, { upsert: true })
+      await ctx.mongo.select.Tag.updateOne(
+        { name: { $in: [item] } },
+        {
+          $set: { name: item }
+        },
+        { upsert: true }
+      )
     })
   }
   await next()

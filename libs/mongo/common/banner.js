@@ -13,7 +13,7 @@ Schema.methods = {
   /**
    * 格式化数据
    */
-  format: function () {
+  format: function() {
     return {
       cover: this.cover,
       goUrl: this.go_url,

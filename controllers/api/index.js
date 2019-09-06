@@ -13,6 +13,7 @@ module.exports = {
   },
   user: {
     login: require('./user/login'),
-    reg: require('./user/reg')
+    reg: require('./user/reg'),
+    center: require('./user/center')
   }
 }

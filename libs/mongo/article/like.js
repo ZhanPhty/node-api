@@ -12,7 +12,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  format: function () {
+  format: function() {
     return {
       articleId: this.article_id,
       userId: this.user_id,
@@ -27,7 +27,7 @@ Schema.statics = {
    * 查询点赞的数量
    * @param {String} aid        文章id
    */
-  findLikeDoc: async function (aid) {
+  findLikeDoc: async function(aid) {
     let count = await this.countDocuments({ article_id: aid })
 
     return Promise.resolve(count)

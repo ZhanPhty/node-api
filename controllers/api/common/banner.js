@@ -17,7 +17,7 @@ module.exports.banner = async (ctx, next) => {
   }
 
   let result = await ctx.mongo.common.Banner.find().sort({ index: -1 })
-  result = result.map((item) => item.format())
+  result = result.map(item => item.format())
 
   ctx.body = {
     code: Code.OK.code,

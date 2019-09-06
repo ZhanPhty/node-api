@@ -55,7 +55,9 @@ module.exports.upload = async (ctx, next) => {
     return
   }
 
-  const { file: { path, name, size, type } } = ctx.request.files
+  const {
+    file: { path, name, size, type }
+  } = ctx.request.files
   // 文件名-时间戳 作为上传文件key
   let pos = name.lastIndexOf('.')
   let suffix = ''
