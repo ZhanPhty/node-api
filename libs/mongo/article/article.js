@@ -22,6 +22,7 @@ let Schema = new mongoose.Schema({
     nick: { type: String, comment: '用户昵称' },
     cover: { type: String, comment: '用户头像' },
     type: { type: String, comment: '账号类型' },
+    level: { type: Number, comment: '用户等级' },
     is_root: { type: Boolean, alias: 'isRoot', comment: '是否管理员' }
   },
   read: { type: Number, default: 0, comment: '阅读量' },
@@ -41,7 +42,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  formatArticle: function() {
+  formatArticle: function () {
     return {
       id: this._id,
       title: this.title,
@@ -73,7 +74,7 @@ Schema.statics = {
    * 查询分类博文的数量
    * @param {String} category     需查询的分类
    */
-  findCategory: async function(category) {
+  findCategory: async function (category) {
     let count = await this.countDocuments({ category, status: 'online', is_private: false })
 
     return Promise.resolve(count)
@@ -85,8 +86,8 @@ Schema.statics = {
    * @param {String} key         要更新的字段
    * @param {String} aid         文章id
    */
-  updateIncDoc: function(key, aid, num = 1) {
-    this.findOneAndUpdate({ _id: aid }, { $inc: { [key]: num } }, { useFindAndModify: false }, () => {})
+  updateIncDoc: function (key, aid, num = 1) {
+    this.findOneAndUpdate({ _id: aid }, { $inc: { [key]: num } }, { useFindAndModify: false }, () => { })
   },
 
   /**
@@ -102,7 +103,7 @@ Schema.statics = {
    * ========================================
    * @param {String} aid         文章id
    */
-  updateWeight: async function(aid) {
+  updateWeight: async function (aid) {
     const { review, read, praise, created } = await this.findOne({ _id: aid }).exec()
     const currentDate = (Date.now() - created) / 1000 / 60 / 60 // 小时
     const gravity = currentDate > 720 ? 2 : 1.5 // 超过720小时比重提升到2.0
@@ -114,7 +115,7 @@ Schema.statics = {
         $set: { weight: score }
       },
       { upsert: true },
-      () => {}
+      () => { }
     )
   },
 
@@ -124,7 +125,7 @@ Schema.statics = {
    * @param {String} aid          文章id
    * @param {Number} count        统计总数
    */
-  updateCount: async function(key, aid, count) {
+  updateCount: async function (key, aid, count) {
     let result = await this.updateOne(
       { _id: aid },
       {

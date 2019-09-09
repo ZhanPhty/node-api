@@ -317,7 +317,8 @@ exports.publish = async (ctx, next) => {
         nick: userInfo.nick,
         cover: userInfo.cover,
         type: userInfo.type,
-        is_root: userInfo.is_root
+        is_root: userInfo.is_root,
+        level: userInfo.level
       }
     }
     const result = await ctx.mongo.article.Article.create(create)

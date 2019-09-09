@@ -38,9 +38,12 @@ exports.register = async (ctx, next) => {
   }
 
   let user = await ctx.mongo.user.User.findOne({ account: ctx.request.body.account }).exec()
+  let email = await ctx.mongo.user.User.findOne({ email: ctx.request.body.email }).exec()
 
   if (user) {
     return (ctx.body = { code: Code.BadRequest.code, msg: '已经存在的用户名' })
+  } else if (email) {
+    return (ctx.body = { code: Code.BadRequest.code, msg: '已经存在的邮箱' })
   } else {
     const { account, password, email, nick } = ctx.request.body
     const salt = generate('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 6)
@@ -59,6 +62,8 @@ exports.register = async (ctx, next) => {
       msg: Code.OK.msg,
       data: user.formatClient()
     }
+
+    await next()
   }
 }
 

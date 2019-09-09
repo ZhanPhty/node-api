@@ -1,4 +1,5 @@
 const svgCaptcha = require('svg-captcha')
+const nodemailer = require('nodemailer')
 const { Code } = require('../../../libs/consts')
 
 /**
@@ -62,3 +63,45 @@ module.exports.checkCaptcha = async (ctx, next) => {
   ctx.session.captcha = null
   await next()
 }
+
+/**
+ * 发送通知邮箱
+ */
+module.exports.sendMail = async (ctx, next) => {
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  const { email } = ctx.request.body
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtpdm.aliyun.com',
+    port: 25,
+    //"secureConnection": true, // use SSL, the port is 465
+    auth: {
+      user: 'feedback@service.uizph.com',
+      pass: 'ZhanPengHui546392706'
+    }
+  })
+
+  const mailOptions = {
+    from: '詹小灰博客<feedback@service.uizph.com>',
+    to: email,
+    subject: '小灰哥博客-注册成功通知',
+    html: '<p>感谢你注册小灰哥博客，点击<a href="http://www.uizph.com">www.uizph.com</a>跳转</p>'
+  }
+
+  transporter.sendMail(mailOptions, function (error) {
+    if (error) {
+      return console.log(error)
+    }
+  })
+}
+
