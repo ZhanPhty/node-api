@@ -1,10 +1,17 @@
 {
-  "port": 80,
-  "host": "http://www.uizph.com",
+  "port": 3200,
+  "host": "http://127.0.0.1:3200",
   "mongodb": {
     "blog": {
-      "host": "mongodb://127.0.0.1:27017/blog",
-      "test_host": "mongodb://root:123456@127.0.0.1:27017/test_blog",
+      "host": "mongodb://root:a546392706@127.0.0.1:27017/blog?authSource=admin",
+      "extra": {
+        "useNewUrlParser": true,
+        "autoReconnect": true,
+        "poolSize": 10
+      }
+    },
+    "admin": {
+      "host": "mongodb://root:a546392706@127.0.0.1:27017/blog_admin?authSource=admin",
       "extra": {
         "useNewUrlParser": true,
         "autoReconnect": true,
@@ -13,7 +20,7 @@
     }
   },
   "limit": 15,
-  "secret": "Blog@&Zh09Ao",
+  "secret": "Blog@&39wAPq",
   "qiniu": {
     "accessKey": "DBAfsq8MjffPKCJInlmCTLlLLiUbmnV9f4MrhLUo",
     "secretKey": "f0U98I5wK8kOYgdayEvCtNTMU0ReIRj1z_weKmnO",
