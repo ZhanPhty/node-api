@@ -3,7 +3,7 @@
   "host": "http://127.0.0.1:3200",
   "mongodb": {
     "blog": {
-      "host": "mongodb://root:a546392706@127.0.0.1:27017/test_blog?authSource=admin",
+      "host": "mongodb://127.0.0.1:27017/test_blog",
       "extra": {
         "useNewUrlParser": true,
         "autoReconnect": true,
@@ -11,7 +11,7 @@
       }
     },
     "admin": {
-      "host": "mongodb://root:a546392706@127.0.0.1:27017/test_admin?authSource=admin",
+      "host": "mongodb://127.0.0.1:27017/test_admin",
       "extra": {
         "useNewUrlParser": true,
         "autoReconnect": true,
