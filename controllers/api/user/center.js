@@ -119,7 +119,8 @@ exports.update = async ctx => {
             nick: result.nick,
             cover: result.cover,
             type: result.type,
-            is_root: result.is_root
+            is_root: result.is_root,
+            level: result.level
           }
         }
       }

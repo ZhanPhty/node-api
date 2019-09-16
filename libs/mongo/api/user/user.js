@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const { User } = require('../../consts')
-const { tool } = require('../../utils')
+const { User } = require('../../../consts')
+const { tool } = require('../../../utils')
 
 let Schema = new mongoose.Schema(
   {
@@ -37,7 +37,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  formatClient: function() {
+  formatClient: function () {
     return {
       id: this._id,
       account: this.account,
@@ -64,7 +64,7 @@ Schema.statics = {
    * 验证登录账户、密码
    * 密码使用'pass+salt'的md5加密获得
    */
-  login: async function(account, password) {
+  login: async function (account, password) {
     let result = await this.findOne({ account }).exec()
 
     if (result && result.password === tool.md5(`${password}${result.password_salt}`)) {
@@ -78,7 +78,7 @@ Schema.statics = {
    * 查询用户信息
    * @param {String} uid      用户id
    */
-  findUserInfo: async function(uid) {
+  findUserInfo: async function (uid) {
     let result = await this.findOne({ _id: uid }).exec()
 
     if (result) {

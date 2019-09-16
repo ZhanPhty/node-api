@@ -52,11 +52,9 @@ module.exports.checkCaptcha = async (ctx, next) => {
     process.env.NODE_ENV !== 'development' &&
     (!ctx.session.captcha || !captcha || captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())
   ) {
-    errors = '图片验证码错误'
     ctx.body = {
       code: Code.BadRequest.code,
-      msg: Code.BadRequest.msg,
-      errors
+      msg: '图片验证码错误'
     }
     return
   }

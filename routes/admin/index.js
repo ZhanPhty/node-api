@@ -1,8 +1,8 @@
 const router = require('koa-router')()
 
-const auth = require('./auth')
+const account = require('./account')
 
 router.prefix('/blogadmin')
-router.use(auth.routes())
+router.use(account.routes())
 
 module.exports = router

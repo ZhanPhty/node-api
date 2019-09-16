@@ -1,23 +1,26 @@
 module.exports = (blog, admin) => {
   const model = {
-    auth: {
-      Permission: admin.model('permission', require('./auth/permission'))
+    // admin
+    account: {
+      User: admin.model('user', require('./admin/account/user'))
     },
+
+    // api
     common: {
-      Banner: blog.model('banner', require('./common/banner'))
+      Banner: blog.model('banner', require('./api/common/banner'))
     },
     user: {
-      User: blog.model('user', require('./user/user'))
+      User: blog.model('user', require('./api/user/user'))
     },
     article: {
-      Article: blog.model('article', require('./article/article')),
-      Like: blog.model('like', require('./article/like')),
-      Comment: blog.model('comment', require('./article/comment'))
+      Article: blog.model('article', require('./api/article/article')),
+      Like: blog.model('like', require('./api/article/like')),
+      Comment: blog.model('comment', require('./api/article/comment'))
     },
     select: {
-      Types: blog.model('type', require('./select/types')),
-      Category: blog.model('category', require('./select/category')),
-      Tag: blog.model('tag', require('./select/tag'))
+      Types: blog.model('type', require('./api/select/types')),
+      Category: blog.model('category', require('./api/select/category')),
+      Tag: blog.model('tag', require('./api/select/tag'))
     }
   }
 

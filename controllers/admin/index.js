@@ -1,5 +1,5 @@
 module.exports = {
-  auth: {
-    permission: require('./auth/permission')
+  account: {
+    user: require('./account/user')
   }
 }
