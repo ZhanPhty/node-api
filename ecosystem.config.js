@@ -5,7 +5,7 @@ module.exports = {
    */
   apps: [
     {
-      name: 'blog-web',
+      name: 'blog-api',
       script: 'bin/www',
       instances: 'max',
       exec_mode: 'cluster',
