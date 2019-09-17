@@ -15,5 +15,8 @@ module.exports = [
   /^\/blogapi\/user\/.*\/like/,
   /^\/blogapi\/action\/.*\/comments/,
   /^\/blogapi\/select\//,
-  /^\/blogapi\/article\/detail\//
+  /^\/blogapi\/article\/detail\//,
+
+  // admin
+  /^\/blogadmin\//,
 ]
