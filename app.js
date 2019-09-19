@@ -26,6 +26,7 @@ onerror(app)
 app.use(
   cors({
     origin: ctx => {
+      console.log(ctx.url)
       const referer = ctx.header.referer || ''
       const retUrl = referer.split('//') || []
       const url = retUrl.length > 1 ? retUrl[1].split('/') : []
@@ -33,7 +34,7 @@ app.use(
       const whiteList = ['uizph.com', 'www.uizph.com']
 
       if (whiteList.includes(url[0])) {
-        return '*'
+        return `${retUrl[0]}//${url[0]}`
       }
       return 'http://localhost:9200'
     },
