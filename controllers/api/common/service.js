@@ -23,14 +23,12 @@ module.exports.captcha = async (ctx, next) => {
     captcha.text = ctx.query.text
   }
 
-  ctx.session.captcha = captcha.text
   ctx.body = captcha.data
   return
 }
 
 /**
  * 检测图片验证码
- * 获取session中的图片验证码，检测有效性
  * @return svg
  */
 module.exports.checkCaptcha = async (ctx, next) => {
@@ -47,18 +45,19 @@ module.exports.checkCaptcha = async (ctx, next) => {
     return
   }
 
-  let captcha = ctx.request.body.captcha
-  if (
-    process.env.NODE_ENV !== 'development' &&
-    (!ctx.session.captcha || !captcha || captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())
-  ) {
-    ctx.body = {
-      code: Code.BadRequest.code,
-      msg: '图片验证码错误'
-    }
-    return
-  }
-  ctx.session.captcha = null
+  // session 无效
+  // let captcha = ctx.request.body.captcha
+  // if (
+  //   process.env.NODE_ENV !== 'development' &&
+  //   (!ctx.session.captcha || !captcha || captcha.toLowerCase() !== ctx.session.captcha.toLowerCase())
+  // ) {
+  //   ctx.body = {
+  //     code: Code.BadRequest.code,
+  //     msg: '图片验证码错误'
+  //   }
+  //   return
+  // }
+  // ctx.session.captcha = null
   await next()
 }
 
@@ -96,7 +95,7 @@ module.exports.sendMail = async (ctx, next) => {
     html: '<p>感谢你注册小灰哥博客，点击<a href="http://www.uizph.com">www.uizph.com</a>跳转</p>'
   }
 
-  transporter.sendMail(mailOptions, function(error) {
+  transporter.sendMail(mailOptions, function (error) {
     if (error) {
       return console.log(error)
     }

@@ -5,8 +5,8 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const logger = require('koa-logger')
 
+var cors = require('koa2-cors')
 const koaValidate = require('koa-validate')
-const session = require('koa-session')
 const koaJwt = require('koa-jwt')
 const koaBody = require('koa-body')
 
@@ -21,6 +21,29 @@ const admin = require('./routes/admin/index')
 koaValidate(app)
 // error handler
 onerror(app)
+
+// 跨域
+app.use(
+  cors({
+    origin: ctx => {
+      const referer = ctx.header.referer || ''
+      const retUrl = referer.split('//') || []
+      const url = retUrl.length > 1 ? retUrl[1].split('/') : []
+      //可跨域白名单
+      const whiteList = ['uizph.com', 'www.uizph.com']
+
+      if (whiteList.includes(url[0])) {
+        return '*'
+      }
+      return 'http://localhost:9200'
+    },
+    maxAge: 1728000,
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept', 'token'],
+    exposeHeaders: ['WWW-Authenticate', 'Server-Authorization']
+  })
+)
 
 // middlewares
 app.use(require('./middleware/mongo')(config.get('mongodb'))) // mongodb
@@ -75,30 +98,12 @@ app.use(async (ctx, next) => {
   }
 })
 
-//session
-app.keys = ['blogDataAPI']
-app.use(
-  session(
-    {
-      key: 'sid:blog',
-      maxAge: 8640000,
-      autoCommit: true,
-      overwrite: true,
-      httpOnly: true,
-      signed: true,
-      rolling: true,
-      renew: false
-    },
-    app
-  )
-)
-
 // logger
 app.use(async (ctx, next) => {
   const start = new Date()
   await next()
   const ms = new Date() - start
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
+  console.log(`${ctx.method} ${ctx.url} - ${ms} ms`)
 })
 
 // routes

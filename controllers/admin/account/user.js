@@ -187,7 +187,6 @@ exports.apply = async ctx => {
 
 /**
  * 登录管理员后台
- * 登录设置session.adminId
  * @author 詹鹏辉
  * @create 2019-09-17 10:39:23
  */
@@ -216,8 +215,6 @@ exports.login = async (ctx, next) => {
         $set: { last_login: Date.now() }
       }
     )
-    // 设置session
-    ctx.session.adminId = result._id
 
     ctx.body = {
       code: Code.OK.code,
@@ -238,7 +235,6 @@ exports.login = async (ctx, next) => {
  * 退出登录
  */
 exports.loginOut = async ctx => {
-  ctx.session = null
   ctx.body = {
     code: 200,
     msg: '退出成功'
@@ -256,8 +252,7 @@ exports.getFindRoot = async (ctx, next) => {
     code: Code.OK.code,
     msg: Code.OK.msg,
     data: {
-      hasRoot: isRoot ? false : true,
-      hasLogin: ctx.session.adminId ? true : false
+      hasRoot: isRoot ? false : true
     }
   }
 }
