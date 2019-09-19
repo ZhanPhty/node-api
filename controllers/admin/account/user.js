@@ -111,6 +111,83 @@ exports.createRoot = async (ctx, next) => {
 }
 
 /**
+ * 编辑管理员资料
+ * @author 詹鹏辉
+ * @create 2019-09-19 10:17:22
+ */
+exports.update = async (ctx) => {
+  ctx.checkBody('nick').notEmpty('标题不能为空')
+
+  const { nick, cover } = ctx.request.body
+  const body = Object.assign(ctx.state.account, { nick, cover })
+
+  // 更新数据
+  const result = await body.save()
+
+  if (result) {
+    ctx.body = {
+      code: Code.OK.code,
+      msg: Code.OK.msg,
+      data: result.format()
+    }
+  } else {
+    return (ctx.body = {
+      code: Code.Forbidden.code,
+      msg: Code.Forbidden.msg
+    })
+  }
+}
+
+/**
+ * 删除管理员资料
+ * @author 詹鹏辉
+ * @create 2019-09-19 10:34:22
+ */
+exports.delete = async (ctx) => {
+  const { id } = ctx.params
+  const result = await ctx.mongo.account.User.deleteMany({ _id: id })
+
+  if (result) {
+    ctx.body = {
+      code: Code.OK.code,
+      msg: Code.OK.msg
+    }
+  } else {
+    return (ctx.body = {
+      code: Code.Forbidden.code,
+      msg: Code.Forbidden.msg
+    })
+  }
+}
+
+/**
+ * 修改账号状态
+ * status -> pending: 审核中; normal: 正常; reject: 禁用; freeze: 冻结;
+ * @author 詹鹏辉
+ * @create 2019-09-19 10:38:15
+ */
+exports.apply = async (ctx) => {
+  ctx.checkBody('status').notEmpty('状态不能为空')
+
+
+  const { status } = ctx.request.body
+  const body = Object.assign(ctx.state.account, { status })
+  const result = await body.save()
+
+  if (result) {
+    ctx.body = {
+      code: Code.OK.code,
+      msg: Code.OK.msg
+    }
+  } else {
+    return (ctx.body = {
+      code: Code.Forbidden.code,
+      msg: '操作失败'
+    })
+  }
+}
+
+/**
  * 登录管理员后台
  * 登录设置session.adminId
  * @author 詹鹏辉
@@ -133,8 +210,6 @@ exports.login = async (ctx, next) => {
 
   const { account, password } = ctx.request.body
   let result = await ctx.mongo.account.User.login(account, password)
-
-  console.log(result)
 
   if (result) {
     await ctx.mongo.account.User.updateOne(
@@ -185,6 +260,24 @@ exports.getFindRoot = async (ctx, next) => {
     data: {
       hasRoot: isRoot ? false : true,
       hasLogin: ctx.session.adminId ? true : false
+    }
+  }
+}
+
+/**
+ * 通过id,查询符合条件的用户id
+ */
+exports.getById = async (ctx, next) => {
+  const { id } = ctx.params
+  const result = await ctx.mongo.account.User.findById(id)
+
+  if (result) {
+    ctx.state.account = result
+    await next()
+  } else {
+    return ctx.body = {
+      code: Code.NotFound.code,
+      msg: '未找到管理员'
     }
   }
 }

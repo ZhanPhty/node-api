@@ -48,21 +48,7 @@ Schema.statics = {
   login: async function (account, password) {
     let result = await this.findOne({ account }).exec()
 
-    if (result && result.password === tool.md5(`${password}${result.password_salt}`)) {
-      return Promise.resolve(result)
-    } else {
-      return Promise.resolve(null)
-    }
-  },
-
-  /**
-   * 查询用户信息
-   * @param {String} uid      用户id
-   */
-  findUserInfo: async function (uid) {
-    let result = await this.findOne({ _id: uid }).exec()
-
-    if (result) {
+    if (result && result.status === 'normal' && result.password === tool.md5(`${password}${result.password_salt}`)) {
       return Promise.resolve(result)
     } else {
       return Promise.resolve(null)
