@@ -10,10 +10,10 @@ module.exports.captcha = async (ctx, next) => {
   const width = ctx.query.width ? parseInt(ctx.query.width) : 120
   const height = ctx.query.height ? parseInt(ctx.query.height) : 44
   let captcha = svgCaptcha.create({
-    color: true,
-    ignoreChars: '0o1i',
+    color: false,
+    ignoreChars: '0oO1ilLIjJaq',
     fontSize: 42,
-    noise: 2,
+    noise: 3,
     width,
     height
   })
@@ -96,10 +96,9 @@ module.exports.sendMail = async (ctx, next) => {
     html: '<p>感谢你注册小灰哥博客，点击<a href="http://www.uizph.com">www.uizph.com</a>跳转</p>'
   }
 
-  transporter.sendMail(mailOptions, function (error) {
+  transporter.sendMail(mailOptions, function(error) {
     if (error) {
       return console.log(error)
     }
   })
 }
-

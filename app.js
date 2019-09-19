@@ -81,12 +81,12 @@ app.use(
   session(
     {
       key: 'sid:blog',
-      maxAge: 86400000,
+      maxAge: 8640000,
       autoCommit: true,
       overwrite: true,
       httpOnly: true,
       signed: true,
-      rolling: false,
+      rolling: true,
       renew: false
     },
     app

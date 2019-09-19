@@ -23,8 +23,12 @@ exports.other = async ctx => {
 
   const { id } = ctx.params
   const result = await ctx.mongo.user.User.findOne({ _id: id })
-  const articleCount = await ctx.mongo.article.Article.countDocuments({ 'user_info.id': id, status: 'online', is_private: false })
-  const likeCount = await ctx.mongo.article.Like.countDocuments({ 'user_id': id })
+  const articleCount = await ctx.mongo.article.Article.countDocuments({
+    'user_info.id': id,
+    status: 'online',
+    is_private: false
+  })
+  const likeCount = await ctx.mongo.article.Like.countDocuments({ user_id: id })
 
   if (result) {
     ctx.body = {
@@ -187,14 +191,12 @@ exports.reset = async ctx => {
 
   if (result) {
     if (tool.md5(oldPassword + result.password_salt) === result.password) {
-      const update = await result.updateOne(
-        {
-          $set: {
-            password_salt: salt,
-            password: tool.md5(newPassword + salt)
-          }
+      const update = await result.updateOne({
+        $set: {
+          password_salt: salt,
+          password: tool.md5(newPassword + salt)
         }
-      )
+      })
 
       if (update) {
         ctx.body = {

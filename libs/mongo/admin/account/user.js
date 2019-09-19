@@ -24,7 +24,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  format: function () {
+  format: function() {
     return {
       id: this._id,
       account: this.account,
@@ -45,10 +45,14 @@ Schema.statics = {
    * 验证登录账户、密码
    * 密码使用'pass+salt'的md5加密获得
    */
-  login: async function (account, password) {
+  login: async function(account, password) {
     let result = await this.findOne({ account }).exec()
 
-    if (result && result.status === 'normal' && result.password === tool.md5(`${password}${result.password_salt}`)) {
+    if (
+      result &&
+      result.status === 'normal' &&
+      result.password === tool.md5(`${password}${result.password_salt}`)
+    ) {
       return Promise.resolve(result)
     } else {
       return Promise.resolve(null)

@@ -2,7 +2,6 @@ const generate = require('nanoid/generate')
 const { Code, Paginate } = require('../../../libs/consts')
 const { tool } = require('../../../libs/utils')
 
-
 /**
  * 获取管理员列表
  * @author 詹鹏辉
@@ -115,7 +114,7 @@ exports.createRoot = async (ctx, next) => {
  * @author 詹鹏辉
  * @create 2019-09-19 10:17:22
  */
-exports.update = async (ctx) => {
+exports.update = async ctx => {
   ctx.checkBody('nick').notEmpty('标题不能为空')
 
   const { nick, cover } = ctx.request.body
@@ -143,7 +142,7 @@ exports.update = async (ctx) => {
  * @author 詹鹏辉
  * @create 2019-09-19 10:34:22
  */
-exports.delete = async (ctx) => {
+exports.delete = async ctx => {
   const { id } = ctx.params
   const result = await ctx.mongo.account.User.deleteMany({ _id: id })
 
@@ -166,9 +165,8 @@ exports.delete = async (ctx) => {
  * @author 詹鹏辉
  * @create 2019-09-19 10:38:15
  */
-exports.apply = async (ctx) => {
+exports.apply = async ctx => {
   ctx.checkBody('status').notEmpty('状态不能为空')
-
 
   const { status } = ctx.request.body
   const body = Object.assign(ctx.state.account, { status })
@@ -239,7 +237,7 @@ exports.login = async (ctx, next) => {
 /**
  * 退出登录
  */
-exports.loginOut = async (ctx) => {
+exports.loginOut = async ctx => {
   ctx.session = null
   ctx.body = {
     code: 200,
@@ -275,9 +273,9 @@ exports.getById = async (ctx, next) => {
     ctx.state.account = result
     await next()
   } else {
-    return ctx.body = {
+    return (ctx.body = {
       code: Code.NotFound.code,
       msg: '未找到管理员'
-    }
+    })
   }
 }

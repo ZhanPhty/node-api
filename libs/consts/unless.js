@@ -18,5 +18,5 @@ module.exports = [
   /^\/blogapi\/article\/detail\//,
 
   // admin
-  /^\/blogadmin\//,
+  /^\/blogadmin\//
 ]
