@@ -1,5 +1,5 @@
 const { Code, Paginate } = require('../../../libs/consts')
-const { tool, token } = require('../../../libs/utils')
+const { tool } = require('../../../libs/utils')
 const requestIp = require('request-ip')
 
 /**
@@ -229,27 +229,15 @@ exports.search = async (ctx, next) => {
  */
 exports.single = async (ctx, next) => {
   const item = ctx.state.article
-  const header = ctx.header
 
   ctx.mongo.article.Article.updateIncDoc('read', item._id)
   ctx.mongo.article.Article.updateWeight(item._id)
-  item.isPraise = false
 
-  // 获取header.authorization 判断是否登录状态
-  // 根据登录状态获取用户id
-  // 通过文章id、用户id获取当篇文章是否已经点赞
-  if (header.authorization) {
-    const auth = header.authorization.split(' ')
-    const userInfo = await token.checkToken(auth[1], config.secret)
-
-    if (userInfo.uid) {
-      const find = await ctx.mongo.article.Like.findOne({
-        article_id: item._id,
-        user_id: userInfo.uid
-      }).exec()
-
-      find && (item.isPraise = true)
-    }
+  if (item.status === 'delete') {
+    return (ctx.body = {
+      code: 404,
+      msg: '文章已删除'
+    })
   }
 
   ctx.body = {

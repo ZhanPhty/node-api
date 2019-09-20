@@ -95,7 +95,7 @@ module.exports.sendMail = async (ctx, next) => {
     html: '<p>感谢你注册小灰哥博客，点击<a href="http://www.uizph.com">www.uizph.com</a>跳转</p>'
   }
 
-  transporter.sendMail(mailOptions, function (error) {
+  transporter.sendMail(mailOptions, function(error) {
     if (error) {
       return console.log(error)
     }

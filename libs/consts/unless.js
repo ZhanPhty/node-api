@@ -10,6 +10,7 @@ module.exports = [
   '/blogapi/article/hot',
   '/blogapi/article/recommend',
   '/blogapi/article/search',
+  /^\/blogapi\/action\/checklike\//,
   /^\/blogapi\/user\/.*\/center/,
   /^\/blogapi\/user\/.*\/article/,
   /^\/blogapi\/user\/.*\/like/,

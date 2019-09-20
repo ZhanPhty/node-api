@@ -1,5 +1,49 @@
 const { Code } = require('../../../libs/consts')
+const { token } = require('../../../libs/utils')
 const requestIp = require('request-ip')
+
+/**
+ * 检测文章的点赞状态
+ */
+exports.checklike = async (ctx, next) => {
+  const { id } = ctx.params
+  const header = ctx.header
+  let isPraise = false
+
+  let errors = []
+  if (ctx.errors) {
+    errors = ctx.errors
+    ctx.body = {
+      code: Code.BadRequest.code,
+      msg: Code.BadRequest.msg,
+      errors
+    }
+    return
+  }
+
+  // 获取header.authorization 判断是否登录状态
+  // 根据登录状态获取用户id
+  // 通过文章id、用户id获取当篇文章是否已经点赞
+  if (header.authorization) {
+    const auth = header.authorization.split(' ')
+    const userInfo = await token.checkToken(auth[1], config.secret)
+
+    const find = await ctx.mongo.article.Like.findOne({
+      article_id: id,
+      user_id: userInfo.uid
+    }).exec()
+
+    find && (isPraise = true)
+  }
+
+  ctx.body = {
+    code: Code.OK.code,
+    msg: Code.OK.msg,
+    data: {
+      isPraise
+    }
+  }
+}
 
 /**
  * 博客文章点赞

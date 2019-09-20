@@ -84,20 +84,6 @@ app.use(
     path: Unless
   })
 )
-// 检测token是否通过
-// 检测token中是否包含isRefresh=true参数, 区分普通token与refreshToken
-app.use(async (ctx, next) => {
-  const { state } = ctx
-  if (state.user && state.user.isRefresh) {
-    ctx.status = 401
-    ctx.body = {
-      code: Code.ErrorToken.code,
-      msg: Code.ErrorToken.msg
-    }
-  } else {
-    await next()
-  }
-})
 
 // logger
 app.use(async (ctx, next) => {

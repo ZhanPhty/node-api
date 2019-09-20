@@ -186,62 +186,6 @@ exports.apply = async ctx => {
 }
 
 /**
- * 登录管理员后台
- * @author 詹鹏辉
- * @create 2019-09-17 10:39:23
- */
-exports.login = async (ctx, next) => {
-  ctx.checkBody('account').notEmpty('账号不能为空')
-  ctx.checkBody('password').notEmpty('密码不能为空')
-
-  let errors = []
-  if (ctx.errors) {
-    errors = ctx.errors
-    ctx.body = {
-      code: Code.BadRequest.code,
-      msg: Code.BadRequest.msg,
-      errors
-    }
-    return
-  }
-
-  const { account, password } = ctx.request.body
-  let result = await ctx.mongo.account.User.login(account, password)
-
-  if (result) {
-    await ctx.mongo.account.User.updateOne(
-      { _id: result._id },
-      {
-        $set: { last_login: Date.now() }
-      }
-    )
-
-    ctx.body = {
-      code: Code.OK.code,
-      msg: Code.OK.msg,
-      data: {
-        ...result.format()
-      }
-    }
-  } else {
-    ctx.body = {
-      code: Code.BadRequest.code,
-      msg: '账户或密码错误'
-    }
-  }
-}
-
-/**
- * 退出登录
- */
-exports.loginOut = async ctx => {
-  ctx.body = {
-    code: 200,
-    msg: '退出成功'
-  }
-}
-
-/**
  * 查询是否存在超级管理员账号
  * 不存在则可以创建一个唯一的超级管理员账号
  */
