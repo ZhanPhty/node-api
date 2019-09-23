@@ -25,8 +25,7 @@ exports.other = async ctx => {
   const result = await ctx.mongo.user.User.findOne({ _id: id })
   const articleCount = await ctx.mongo.article.Article.countDocuments({
     'user_info.id': id,
-    status: 'online',
-    is_private: false
+    status: 'online'
   })
   const likeCount = await ctx.mongo.article.Like.countDocuments({ user_id: id })
 
@@ -247,9 +246,9 @@ exports.article = async ctx => {
   const limit = ctx.query.pageSize ? parseInt(ctx.query.pageSize) : config.get('limit')
 
   await ctx.mongo.article.Article.paginate(
-    { status: 'online', is_private: false, 'user_info.id': id },
+    { status: 'online', 'user_info.id': id },
     {
-      select: '-is_private -status -content -delete_at',
+      select: '-status -content -delete_at',
       sort: { created: -1 },
       page,
       limit,
@@ -299,9 +298,9 @@ exports.like = async ctx => {
   const resLikes = likes.map(item => item.article_id) || []
 
   await ctx.mongo.article.Article.paginate(
-    { status: 'online', is_private: false, _id: { $in: resLikes } },
+    { status: 'online', _id: { $in: resLikes } },
     {
-      select: '-is_private -status -content -delete_at',
+      select: '-status -content -delete_at',
       sort: { created: -1 },
       page,
       limit,

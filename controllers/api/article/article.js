@@ -4,8 +4,8 @@ const requestIp = require('request-ip')
 
 /**
  * 博客文章列表
- * 只查询status=online、is_private=false的文字
- * 查询结果排除is_private、status、content字段
+ * 只查询status=online的文字
+ * 查询结果排除status、content字段
  * @link https://mongoosejs.com/docs/api.html#query_Query-select
  * @author 詹鹏辉
  * @create 2019-06-28 17:31:59
@@ -28,12 +28,12 @@ exports.list = async (ctx, next) => {
     return
   }
 
-  let paginateQuery = { status: 'online', is_private: false }
+  let paginateQuery = { status: 'online' }
   if (category && category !== '') paginateQuery.category = category
   await ctx.mongo.article.Article.paginate(
     paginateQuery,
     {
-      select: '-is_private -status -content -delete_at',
+      select: '-status -content -delete_at',
       sort: { created: -1 },
       page,
       limit,
@@ -80,11 +80,10 @@ exports.recommend = async (ctx, next) => {
 
   await ctx.mongo.article.Article.paginate(
     {
-      status: 'online',
-      is_private: false
+      status: 'online'
     },
     {
-      select: '-is_private -status -content -delete_at',
+      select: '-status -content -delete_at',
       sort: { weight: -1, created: -1 },
       page,
       limit,
@@ -130,8 +129,7 @@ exports.hot = async (ctx, next) => {
 
   await ctx.mongo.article.Article.paginate(
     {
-      status: 'online',
-      is_private: false
+      status: 'online'
     },
     {
       select: 'title read review praise hotted',
@@ -195,11 +193,10 @@ exports.search = async (ctx, next) => {
   await ctx.mongo.article.Article.paginate(
     {
       status: 'online',
-      is_private: false,
       ...findQuery
     },
     {
-      select: '-is_private -status -content -delete_at',
+      select: '-status -content -delete_at',
       sort: { created: -1 },
       page,
       limit,
@@ -258,7 +255,6 @@ exports.single = async (ctx, next) => {
  * @param {String} type             文章类型
  * @param {String} category         博文分类
  * @param {String} cover            博文封面
- * @param {Boolean} isPrivate       是否私密文章
  * @param {String} status           状态：草稿-'draft'、上线-'online', 软删除-'delete', 默认'draft'
  * @param {String} seo.title        seo的title
  * @param {String} seo.keywords     seo的key
@@ -297,7 +293,6 @@ exports.publish = async (ctx, next) => {
       type: body.type,
       type_url: body.typeUrl,
       category: body.category,
-      is_private: body.isPrivate,
       status: body.status,
       seo: body.seo,
       user_info: {
@@ -384,7 +379,7 @@ exports.draft = async (ctx, next) => {
       'user_info.id': ctx.state.user.uid
     },
     {
-      select: '-is_private -status -content -delete_at',
+      select: '-status -content -delete_at',
       sort: { created: -1 },
       page,
       limit,
