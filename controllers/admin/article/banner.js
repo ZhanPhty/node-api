@@ -22,7 +22,8 @@ exports.list = async (ctx, next) => {
     return
   }
 
-  await ctx.mongo.common.Banner.paginate({},
+  await ctx.mongo.common.Banner.paginate(
+    {},
     {
       sort: { index: -1 },
       page,
@@ -59,12 +60,8 @@ exports.list = async (ctx, next) => {
  * @param {Number} expires        有效期
  */
 exports.create = async (ctx, next) => {
-  ctx
-    .checkBody('cover')
-    .notEmpty('封面图不能为空')
-  ctx
-    .checkBody('index')
-    .notEmpty('排序不能为空')
+  ctx.checkBody('cover').notEmpty('封面图不能为空')
+  ctx.checkBody('index').notEmpty('排序不能为空')
 
   let errors = []
   if (ctx.errors) {
@@ -79,7 +76,11 @@ exports.create = async (ctx, next) => {
 
   const { cover, goUrl, title, index, summary, expires } = ctx.request.body
   const create = {
-    cover, title, index, summary, expires,
+    cover,
+    title,
+    index,
+    summary,
+    expires,
     go_url: goUrl
   }
 
@@ -108,9 +109,7 @@ exports.create = async (ctx, next) => {
  * @param {Number} pageSize       页码
  */
 exports.update = async (ctx, next) => {
-  ctx
-    .checkBody('name')
-    .notEmpty('名称不能为空')
+  ctx.checkBody('name').notEmpty('名称不能为空')
 
   let errors = []
   if (ctx.errors) {

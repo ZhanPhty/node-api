@@ -11,7 +11,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  format: function () {
+  format: function() {
     return {
       name: this.name,
       identify: this.identify

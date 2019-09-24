@@ -22,7 +22,8 @@ exports.list = async (ctx, next) => {
     return
   }
 
-  await ctx.mongo.select.Types.paginate({},
+  await ctx.mongo.select.Types.paginate(
+    {},
     {
       sort: { created: -1 },
       page,
@@ -55,9 +56,7 @@ exports.list = async (ctx, next) => {
  * @param {Number} identify       分类标识
  */
 exports.create = async (ctx, next) => {
-  ctx
-    .checkBody('name')
-    .notEmpty('名称不能为空')
+  ctx.checkBody('name').notEmpty('名称不能为空')
   ctx
     .checkBody('identify')
     .notEmpty('标识不能为空')
@@ -102,9 +101,7 @@ exports.create = async (ctx, next) => {
  * @param {Number} pageSize       页码
  */
 exports.update = async (ctx, next) => {
-  ctx
-    .checkBody('name')
-    .notEmpty('名称不能为空')
+  ctx.checkBody('name').notEmpty('名称不能为空')
   ctx
     .checkBody('identify')
     .notEmpty('标识不能为空')

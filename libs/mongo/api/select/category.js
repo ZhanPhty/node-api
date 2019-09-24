@@ -11,7 +11,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  format: function () {
+  format: function() {
     return {
       name: this.name,
       count: this.count
@@ -26,7 +26,7 @@ Schema.statics = {
    * @param {String} category     需要更新的分类
    * @param {Number} count        统计总数
    */
-  updateCount: async function (category, count) {
+  updateCount: async function(category, count) {
     let result = await this.updateOne(
       { name: category },
       {

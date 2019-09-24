@@ -41,7 +41,18 @@ app.use(
     maxAge: 1728000,
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['DNT', 'Content-Type', 'X-CustomHeader', 'Keep-Alive', 'User-Agent', 'X-Requested-With', 'Cache-Control', 'Authorization', 'Accept', 'token'],
+    allowHeaders: [
+      'DNT',
+      'Content-Type',
+      'X-CustomHeader',
+      'Keep-Alive',
+      'User-Agent',
+      'X-Requested-With',
+      'Cache-Control',
+      'Authorization',
+      'Accept',
+      'token'
+    ],
     exposeHeaders: ['WWW-Authenticate', 'Server-Authorization']
   })
 )
