@@ -22,8 +22,16 @@ exports.list = async (ctx, next) => {
     return
   }
 
-  // let query = { status: { $not: /^delete.*/ } }
+  const { status, keyword, toped } = ctx.query
   let query = {}
+
+  status && (query.status = status)
+  toped && (query.toped = toped)
+  if (keyword) {
+    query = Object.assign(query, {
+      $or: [{ title: { $regex: keyword, $options: 'ix' } }, { content: { $regex: keyword, $options: 'ix' } }]
+    })
+  }
 
   await ctx.mongo.article.Article.paginate(
     query,

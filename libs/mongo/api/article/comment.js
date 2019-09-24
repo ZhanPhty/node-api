@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const paginate = require('mongoose-paginate-v2')
 
 let Schema = new mongoose.Schema({
   article_id: { type: String, alias: 'articleId', required: true, comment: '文章id' },
@@ -24,7 +25,7 @@ Schema.methods = {
    * 格式化数据
    * 返回给客户端的数据
    */
-  format: function() {
+  format: function () {
     return formatComment(this)
   }
 }
@@ -35,7 +36,7 @@ Schema.statics = {
    * 查询评论的数量
    * @param {String} aid        文章id
    */
-  findCommentDoc: async function(aid) {
+  findCommentDoc: async function (aid) {
     let count = await this.countDocuments({ article_id: aid })
 
     return Promise.resolve(count)
@@ -45,7 +46,7 @@ Schema.statics = {
    * 根据文章id查询对应的评论
    * @param {String} aid        文章id
    */
-  findComments: async function(aid) {
+  findComments: async function (aid) {
     const result = await this.find({ article_id: aid })
       .select('-article_id -__v')
       .sort('created')
@@ -99,5 +100,7 @@ function formatComment(source) {
     ip: source.ip
   }
 }
+
+Schema.plugin(paginate)
 
 module.exports = Schema

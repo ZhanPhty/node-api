@@ -100,7 +100,7 @@ exports.createRoot = async (ctx, next) => {
       is_root: isRoot ? false : true
     }
 
-    result = await ctx.mongo.account.User.create(create)
+    const result = await ctx.mongo.account.User.create(create)
     ctx.body = {
       code: Code.OK.code,
       msg: Code.OK.msg,
